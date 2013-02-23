@@ -1,7 +1,8 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 0.1.0
-" Author : Felix Riedel <felix.riedel at gmail.com> 
+" Version: 0.1.1
+" Author: Felix Riedel <felix.riedel at gmail.com> 
+" Maintainer: Henrik Lissner <henrik at lissner.net>
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,21 +23,36 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 
+
+if exists('g:loaded_multiedit') || &cp
+    finish
+endif
+let g:loaded_multiedit = 1
+
+if !exists('g:multiedit_nomappings')
+    let g:multiedit_nomappings = 0
+endif
+
+
 hi default MultiSelections gui=reverse term=reverse cterm=reverse
 
 function! s:highlight(line, start, end)
     execute "syn match MultiSelections '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
 endfunction
 
-function! s:addSelection()
+function! s:EntrySort(a,b)
+    return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
+endfunction
 
+
+function! s:addSelection()
     " restore selection
     normal! gv
 
     " get selection parameters
     let lnum = line('.')
     let startcol = col('v')
-    let endcol  = col('.')+1
+    let endcol = col('.')+1
     let line_end = col('$')
 
     " add selection to list
@@ -60,6 +76,36 @@ function! s:addSelection()
 endfunction
 
 
+function! s:startEdit(posMode)
+    if !exists('b:selections')
+        return
+    endif
+    let colno = b:first_selection.col
+
+    " posMode == 0 => place cursor at the start of selection (insert)
+    " posMode == 1 => place after the selection (append)
+    " posMode == 2 => change
+    if a:posMode == 1
+        let colno = b:first_selection.col + b:first_selection.len
+    endif
+
+    call cursor(b:first_selection.line, colno)
+    if a:posMode == 2
+        normal! v
+        call cursor(b:first_selection.line, (b:first_selection.col + b:first_selection.len)-1)
+        normal! c
+        call s:updateSelections()
+    endif
+
+    augroup multiedit 
+        au!
+        au CursorMovedI * call s:updateSelections()
+        " au InsertEnter * call s:updateSelections(1)
+        au InsertLeave * autocmd! multiedit
+    augroup END
+endfunction
+
+
 function! s:reset()
     if exists('b:selections')
         unlet b:selections
@@ -72,26 +118,7 @@ function! s:reset()
 endfunction
 
 
-function! s:startEdit()
-    if !exists('b:selections')
-        return
-    endif
-    call cursor(b:first_selection.line, (b:first_selection.col + b:first_selection.len))
-    augroup multiedit 
-        au!
-        au CursorMovedI * call s:updateSelections()
-        " au InsertEnter * call s:updateSelections(1)
-        au InsertLeave * autocmd! multiedit
-    augroup END
-endfunction
-
-
-function! s:EntrySort(a,b)
-    return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
-endfunction
-
 function! s:updateSelections()
-
     " Save cursor position
     let b:save_cursor = getpos('.')
     " let b:save_col = col(".")
@@ -105,13 +132,12 @@ function! s:updateSelections()
 
     let editline = getline(b:first_selection.line)
     let line_length = len(editline)
-    let newtext = editline[ (b:first_selection.col-1): (line_length-b:first_selection.suffix_length-1)]
-
+    let newtext = editline[(b:first_selection.col-1): (line_length-b:first_selection.suffix_length-1)]
 
     for line in sort(keys(b:selections))
         let entries = b:selections[line]
         let entries = sort(entries, "s:EntrySort")
-        let s:offset = 0
+        let b:offset = 0
 
         for entry in entries
             " skip the entry of the first selection
@@ -131,7 +157,7 @@ function! s:updateSelections()
             endif
             
             " update the offset for the next selection in this line
-            let s:offset = s:offset + len(newtext) - entry.len 
+            let b:offset = s:offset + len(newtext) - entry.len 
 
             " update the length of the selection to fit the new content
             let entry.len = len(newtext)
@@ -143,23 +169,25 @@ function! s:updateSelections()
     let b:first_selection.suffix_length = col([b:first_selection.line, '$']) - b:first_selection.col - b:first_selection.len
 
     " restore cursor position
-    " call cursor(s:save_line, s:save_col) 
     call setpos('.', b:save_cursor)
 endfunction
 
+
+"""""""""""""""""
+"  Keybindings  "
+"""""""""""""""""
 map <Plug>(multiedit-add) :<C-U>call <SID>addSelection()<CR>
-map <Plug>(multiedit-edit) :<C-U>call <SID>startEdit()<CR>
+map <Plug>(multiedit-insert) :<C-U>call <SID>startEdit(0)<CR>
+map <Plug>(multiedit-append) :<C-U>call <SID>startEdit(1)<CR>
+map <Plug>(multiedit-change) :<C-U>call <SID>startEdit(2)<CR>
 map <Plug>(multiedit-reset) :<C-U>call <SID>reset()<CR>
 
-
-
-if !exists('g:multiedit_nomappings')
-    let g:multiedit_nomappings = 0
-endif
-
-if g:multiedit_nomappings != 0
-    vmap ,f <Plug>(multiedit-add)
-    nmap ,f viw,fb
-    nmap  ,i <Plug>(multiedit-edit)i
-    map  ,r <Plug>(multiedit-reset)
+if g:multiedit_nomappings != 1
+    vmap <leader>m <Plug>(multiedit-add)
+    nmap <leader>m v,Mh
+    nmap <leader>M <Plug>(multiedit-reset)
+    nmap <leader>I <Plug>(multiedit-insert)i
+    nmap <leader>A <Plug>(multiedit-append)i
+    nmap <leader>C <Plug>(multiedit-change)a
 endif 
+
