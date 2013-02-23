@@ -101,7 +101,7 @@ function! s:startEdit(posMode)
         au!
         au CursorMovedI * call s:updateSelections()
         " au InsertEnter * call s:updateSelections(1)
-        au InsertLeave * autocmd! multiedit
+        au InsertLeave * call s:reset() | autocmd! multiedit
     augroup END
 endfunction
 
@@ -137,7 +137,7 @@ function! s:updateSelections()
     for line in sort(keys(b:selections))
         let entries = b:selections[line]
         let entries = sort(entries, "s:EntrySort")
-        let b:offset = 0
+        let s:offset = 0
 
         for entry in entries
             " skip the entry of the first selection
@@ -157,7 +157,7 @@ function! s:updateSelections()
             endif
             
             " update the offset for the next selection in this line
-            let b:offset = s:offset + len(newtext) - entry.len 
+            let s:offset = s:offset + len(newtext) - entry.len 
 
             " update the length of the selection to fit the new content
             let entry.len = len(newtext)
@@ -184,7 +184,7 @@ map <Plug>(multiedit-reset) :<C-U>call <SID>reset()<CR>
 
 if g:multiedit_nomappings != 1
     vmap <leader>m <Plug>(multiedit-add)
-    nmap <leader>m v,Mh
+    nmap <leader>m v<Plug>(multiedit-add)h
     nmap <leader>M <Plug>(multiedit-reset)
     nmap <leader>I <Plug>(multiedit-insert)i
     nmap <leader>A <Plug>(multiedit-append)i
