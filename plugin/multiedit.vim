@@ -33,6 +33,14 @@ if !exists('g:multiedit_nomappings')
     let g:multiedit_nomappings = 0
 endif
 
+if !exists('g:multiedit_autoreset')
+    let g:multiedit_autoreset = 1
+endif
+
+if !exists('g:multiedit_autoupdate')
+    let g:multiedit_autoupdate = 1
+endif
+
 
 hi default MultiSelections gui=reverse term=reverse cterm=reverse
 
@@ -99,9 +107,16 @@ function! s:startEdit(posMode)
 
     augroup multiedit 
         au!
-        au CursorMovedI * call s:updateSelections()
+        if g:multiedit_autoupdate == 1
+            au CursorMovedI * call s:updateSelections()
+        else
+            au InsertLeave * call s:updateSelections()
+        endif
         " au InsertEnter * call s:updateSelections(1)
-        au InsertLeave * call s:reset() | autocmd! multiedit
+        if g:multiedit_autoreset == 1
+            au InsertLeave * call s:reset()
+        endif
+        au InsertLeave * autocmd! multiedit
     augroup END
 endfunction
 
