@@ -1,7 +1,8 @@
-*multiedit.txt* Multi-editing for Vim   
+*multiedit.txt*	 Multi-editing for Vim   
 
-Version: 0.1.0
-Author : Felix Riedel <felix.riedel at gmail.com> 
+Version: 0.1.1
+Author: Felix Riedel <felix.riedel at gmail.com> 
+Maintainer: Henrik Lissner <henrik at lissner.net>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
@@ -24,16 +25,56 @@ License: MIT license  {{{
 
 CONTENTS                                                 *multiedit-contents*
 
-Introduction         |multiedit-introduction|
-Changelog            |multiedit-changelog|
+Introduction        |multiedit-introduction|
+Mappings	    |multiedit-mappings|
+Settings	    |multiedit-settings|
+Changelog           |multiedit-changelog|
 
 ==============================================================================
-INTRODUCTION                                          *multiedit-introduction*
+INTRODUCTION					    *multiedit-introduction*
 
+Do you envy sublime text 2's multiple selection and editing? This plugin hopes
+to fill in that gap in your heart.
 
+Selections are added using <leader>m (in normal or visual mode) and are
+highlighted. You can start editing using <leader>I or an alternative (see
+|multiedit-mappings|).
+
+When you are finished, the selections will reset by default.
 
 ==============================================================================
-CHANGELOG                                               *multiedit-changelog*
+MAPPINGS                                            *multiedit-mappings*
+
+  Action		Command		Notes
+  Add selection		<leader>m
+  Reset selections	<leader>M
+  Start editing		<leader>I	|text
+  Start editing		<leader>A	text|
+  Start editing		<leader>C	|
+
+==============================================================================
+SETTINGS                                            *multiedit-settings*
+
+>
+    " Whether or not to update text across all selections as you type
+    let g:multiedit_autoupdate = 1
+
+    " Should the selections reset when you're done editing?
+    let g:multiedit_autoreset = 1
+
+    " Disable default keymappings? (Maybe you want to make your own?)
+    let g:multiedit_nomappings = 0
+<
+
+==============================================================================
+CHANGELOG					    *multiedit-changelog*
+
+2013-02-23
+- Auto-reset on InsertLeave by default (can be disabled)
+- Auto-update can be disabled
+- Add INSERT, APPEND and CHANGE triggers
+- Change default keymaps
+- Fix g:multiedit_nomappings setting
 
 2012-07-01
 - First experimental version
