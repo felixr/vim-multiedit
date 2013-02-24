@@ -33,14 +33,13 @@ Changelog           |multiedit-changelog|
 ==============================================================================
 INTRODUCTION					    *multiedit-introduction*
 
-Do you envy sublime text 2's multiple selection and editing? This plugin hopes
-to fill in that gap in your heart.
+Do you envy sublime text 2's multiple selection and editing? Let this plugin
+try to fill that text cursor shaped gap in your heart.
 
-Selections are added using <leader>m (in normal or visual mode) and are
-highlighted. You can start editing using <leader>I or an alternative (see
-|multiedit-mappings|).
+Selections are added using <leader>m, and are highlighted. You can start
+editing using <leader>I or an alternative (see |multiedit-mappings|).
 
-When you are finished, the selections will reset by default.
+When you've finished your edits the selections will reset by default.
 
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
