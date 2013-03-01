@@ -136,8 +136,6 @@ endfunction
 function! s:updateSelections()
     " Save cursor position
     let b:save_cursor = getpos('.')
-    " let b:save_col = col(".")
-    " let b:save_line = line(".")
 
     if !exists('b:selections')
         return
