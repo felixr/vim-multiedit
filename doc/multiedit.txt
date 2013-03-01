@@ -56,13 +56,13 @@ SETTINGS                                            *multiedit-settings*
 
 >
     " Whether or not to update text across all selections as you type
-    let g:multiedit_autoupdate = 1
+    let g:multieditAutoUpdate = 1
 
     " Should the selections reset when you're done editing?
-    let g:multiedit_autoreset = 1
+    let g:multieditAutoReset = 1
 
     " Disable default keymappings? (Maybe you want to make your own?)
-    let g:multiedit_nomappings = 0
+    let g:multieditNoMappings = 0
 <
 
 ==============================================================================

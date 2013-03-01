@@ -3,7 +3,8 @@
 For those envious of [Sublime Text's](http://www.sublimetext.com/)
 multi-selection editing...
 
-The plugin is demoed in the following screencast by felixr: http://shelr.tv/records/4fef105a966080237e00005e
+The plugin is demoed in the following screencast by felixr:
+http://shelr.tv/records/4fef105a966080237e00005e
 
 ## Usage
 

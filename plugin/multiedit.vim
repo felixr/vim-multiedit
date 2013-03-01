@@ -24,21 +24,21 @@
 " }}}
 
 
-if exists('g:loaded_multiedit') || &cp
+if exists('g:loadedMultiedit') || &cp
     finish
 endif
-let g:loaded_multiedit = 1
+let g:loadedMultiedit = 1
 
-if !exists('g:multiedit_nomappings')
-    let g:multiedit_nomappings = 0
+if !exists('g:multieditNoMappings')
+    let g:multieditNoMappings = 0
 endif
 
-if !exists('g:multiedit_autoreset')
-    let g:multiedit_autoreset = 1
+if !exists('g:multieditAutoReset')
+    let g:multieditAutoReset = 1
 endif
 
-if !exists('g:multiedit_autoupdate')
-    let g:multiedit_autoupdate = 1
+if !exists('g:multieditAutoUpdate')
+    let g:multieditAutoUpdate = 1
 endif
 
 
@@ -186,21 +186,50 @@ function! s:updateSelections()
 endfunction
 
 
+function s:addMatches()
+    let save_cursor = getpos('.')
+
+    let mode = mode()
+    if mode == "n"
+        normal viw
+        exe 'normal /\V'.escape(<cword>, '/').'/:<C-U>call '.<SID>.'addSelection()'
+    else
+        if mode == "V"
+            let len = strlen(text) - 1
+            let text = input("Search: ")
+        elseif mode == "v"
+            let len = (col('.') - col('v')) - 1
+            let text = join(getline(line('v'), line('.')), '')
+        else
+            call <SID>reset()
+            call setpos('.', save_cursor)
+            return
+        endif
+        exe 'normal /\V'.escape(text, '/').'/v'.repeat('l', len).':<C-U>call '.<SID>.'addSelection()'
+    endif
+    silent exe ':nohlsearch'
+
+    " restore cursor position
+    call setpos('.', save_cursor)
+endfunction
+
+
 """""""""""""""""
 "  Keybindings  "
 """""""""""""""""
-map <Plug>(multiedit-add) :<C-U>call <SID>addSelection()<CR>
-map <Plug>(multiedit-insert) :<C-U>call <SID>startEdit(0)<CR>
-map <Plug>(multiedit-append) :<C-U>call <SID>startEdit(1)<CR>
-map <Plug>(multiedit-change) :<C-U>call <SID>startEdit(2)<CR>
-map <Plug>(multiedit-reset) :<C-U>call <SID>reset()<CR>
+map <Plug>MultiEditAdd :<C-U>call <SID>addSelection()<CR>
+map <Plug>MultiEditAll :<C-U>call <SID>addMatches()<CR>
+map <Plug>MultiEditInsert :<C-U>call <SID>startEdit(0)<CR>
+map <Plug>MultiEditAppend :<C-U>call <SID>startEdit(1)<CR>
+map <Plug>MultiEditChange :<C-U>call <SID>startEdit(2)<CR>
+map <Plug>MultiEditReset :<C-U>call <SID>reset()<CR>
 
 if g:multiedit_nomappings != 1
-    vmap <leader>m <Plug>(multiedit-add)
-    nmap <leader>m v<Plug>(multiedit-add)h
-    nmap <leader>M <Plug>(multiedit-reset)
-    nmap <leader>I <Plug>(multiedit-insert)i
-    nmap <leader>A <Plug>(multiedit-append)i
-    nmap <leader>C <Plug>(multiedit-change)a
+    vmap <leader>m <Plug>MultiEditAdd
+    nmap <leader>m v<Plug>MultiEditAdd
+    nmap <leader>M <Plug>MultiEditAll
+    vmap <leader>M <Plug>MultiEditAll
+    nmap <leader>I <Plug>MultiEditInserti
+    nmap <leader>A <Plug>MultiEditAppendi
+    nmap <leader>C <Plug>MultiEditchangea
 endif 
-
