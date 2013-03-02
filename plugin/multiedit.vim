@@ -85,7 +85,7 @@
 
     " addSelection()
     " Add selection to multiedit {{
-    func! s:addSelection()
+    func! s:addRegion()
         " restore selection
         normal! gv
 
