@@ -136,13 +136,23 @@
     " TODO: addMatch()
     " Add selection/word under the cursor and its occurrence {{
     func! s:addMatch(direction) 
-        let save_cursor = getpos('.')
+        if a:direction != "/" && a:direction != "?"
+            return
+        endif
 
-        " ...
-        " '<,'>g/\Vcall/normal /call/^Mviw,m
+        normal! v
 
-        " restore cursor position
-        call setpos('.', save_cursor)
+        let line = line(".")
+        let col = col("v")
+        let end = col(".")
+
+        let text = join(getline(line), "")[col:end]
+
+        " Move to next iteration and reselect it
+        exe "normal! ".direction."\V".text."v".repeat("l", strlen(text))
+
+        " Add the region!
+        call <SID>addRegion()
     endfunc
     " }}
 
@@ -335,9 +345,11 @@
         nmap <leader>mC viw<Plug>MultiEditAddRegion  
 
         " Mark <cword> as region, then jump to and mark the next instance
-        nmap <leader>mn :call <SID>addMatch(1)<CR>
+        nmap <leader>mn viw:call <SID>addMatch('/')<CR>
+        vmap <leader>mn :call <SID>addMatch('/')<CR>
         " Like ^ but previous
-        nmap <leader>mp :call <SID>addMatch(-1)<CR>
+        nmap <leader>mp viw:call <SID>addMatch('?')<CR>
+        vmap <leader>mp :call <SID>addMatch('?')<CR>
 
         " Resetting
         " Clear region/marker under the cursor
