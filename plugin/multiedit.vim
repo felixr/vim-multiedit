@@ -264,16 +264,6 @@
 """""""""""""""""""""
 " Mappings {{
 
-map <Plug>MultiEditAddMark
-map <Plug>MultiEditAddRegion
-map <Plug>MultiEditAddMatch
-map <Plug>MultiEditClear
-map <Plug>MultiEditReset
-
-map <Plug>MultiEditPrepend
-map <Plug>MultiEditAppend
-map <Plug>MultiEditReplace
-
 if g:multieditNoMappings != 1
     " Adding markers
     nmap <leader>ma :call <SID>addMark("a")<CR>
