@@ -63,7 +63,17 @@
         execute "syn match MultiSelections '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
     endfunction
 
-    function! s:EntrySort(a,b)
+    function! s:rehighlight()
+        syn clear MultiSelections
+
+        for line in keys(b:selections)
+            for sel in b:selections[line]
+                call s:highlight(line, sel.col, sel.end)
+            endfor
+        endfor
+    endfunction
+
+    function! s:entrySort(a,b)
         return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
     endfunction
 
@@ -177,9 +187,53 @@
     " }}
 
     " clear()
-    " TODO: Clears selected region {{
+    " Clears selected region {{
     func! s:clear()
-        " ...
+        if !exists('b:selections')
+            return
+        endif
+
+        " If there are no selections in the current line then ignore this call
+        let line = line(".")
+        if !has_key(b:selections, line)
+            return
+        endif
+
+        let mode = mode()
+        if mode == "V"
+            " If in Visual Line mode, just remove all regions on this line
+            unlet b:selections[line]
+            return
+        elseif mode != "v"
+            " Not visual? Not anymore!
+            normal! v
+        endif
+            let col = col("v")
+            let end = col(".")
+
+            " Go through all the selections...
+            for sel in b:selections[line]
+                " If this $sel is the first_selection, unlet first_selection
+                " and wait for the next iteration for it to be reset.
+                if !exists(b:first_selection)
+                    let b:first_selection = sel
+                elseif sel == b:first_selection
+                    unlet b:first_selection
+                endif
+
+                " Check to see if this selection falls within the visual
+                " selection. If so, clear it!
+                if col == sel.col || col == sel.end 
+                            \ || end == sel.col || end == sel.end
+                            \ || (col > sel.col && end < sel.end)
+                            \ || (col < sel.col && end > sel.end)
+                    unlet b:selections[line]
+                endfor
+            endfor
+        endif
+
+        " Redo the highlights
+        call s:rehighlight()
     endfunc
     " }}
 
