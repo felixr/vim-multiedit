@@ -47,6 +47,10 @@
         let g:multieditAutoUpdate = 1
     endif
 
+    if !exists('g:multieditMarkCharacter')
+        let g:multieditMarkCharacter = '|'
+    endif
+
 " }}
 
 
@@ -113,15 +117,13 @@
     endfunc
     " }}
 
-    " TODO: addMark()
-    " Add a edit cursor (not a selection) {{
-    func! s:addMark()
-        let save_cursor = getpos('.')
-        
-        " ...
+    " addMark()
+    " Add a edit cursor {{
+    func! s:addMark(mode)
+        let mark = g:multieditMarkCharacter[0]
 
-        " restore cursor position
-        call setpos('.', save_cursor)
+        exe "normal! ".mode.g:multieditMarkCharacter."|v"
+        call s:addRegion()
     endfunc
     " }}
 
