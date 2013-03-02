@@ -238,7 +238,7 @@
     " }}
 
     " reset()
-    " Clears multiedit regions {{
+    " Clears multiedit regions and highlights {{
     func! s:reset()
         if exists('b:selections')
             unlet b:selections
@@ -266,7 +266,6 @@
         let editline = getline(b:first_selection.line)
         let line_length = len(editline)
 
-        " TODO: Subtract 1 from 2nd range when this selection is a marker
         let newtext = editline[(b:first_selection.col-1): (line_length-b:first_selection.suffix_length-1)]
 
         for line in sort(keys(b:selections))
