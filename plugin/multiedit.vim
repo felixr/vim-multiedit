@@ -127,9 +127,9 @@
     endfunc
     " }}
 
-    " TODO: addMatches()
+    " TODO: addMatch()
     " Add selection/word under the cursor and its occurrence {{
-    func! s:addMatches()
+    func! s:addMatch(direction)
         let save_cursor = getpos('.')
 
         " ...
@@ -264,23 +264,36 @@
 """""""""""""""""""""
 " Mappings {{
 
+map <Plug>MultiEditAddRegion :call <SID>addRegion()<CR>
+
 if g:multieditNoMappings != 1
-    " Adding markers
+    " Adding markers...
+    " After the cursor
     nmap <leader>ma :call <SID>addMark("a")<CR>
+    " Before the cursor
     nmap <leader>mi :call <SID>addMark("i")<CR>
+    " At end of the line
     nmap <leader>mA :call <SID>addMark("A")<CR>
+    " At beginning of line
     nmap <leader>mI :call <SID>addMark("I")<CR>
 
     " Adding regions
-    vmap <leader>mc :call <SID>addRegion()<CR>
-    nmap <leader>mc v<leader>mc
-    nmap <leader>mC viw<leader>mc
+    " Add the current selection as a multiedit region
+    vmap <leader>mc <Plug>MultiEditAddRegion
+    " Add the character under the cursor as a region
+    nmap <leader>mc v<Plug>MultiEditAddRegion  
+    " Add the word object under the cursor as a region
+    nmap <leader>mC viw<Plug>MultiEditAddRegion  
 
+    " Mark <cword> as region, then jump to and mark the next instance
     nmap <leader>mn :call <SID>addMatch(1)<CR>
+    " Like ^ but previous
     nmap <leader>mp :call <SID>addMatch(-1)<CR>
 
     " Resetting
+    " Clear region/marker under the cursor
     map <leader>md :call <SID>clear()<CR>
+    " Clear all regions and markers
     map <leader>mr :call <SID>reset()<CR>
 endif 
 
