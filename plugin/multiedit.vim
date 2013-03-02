@@ -35,29 +35,16 @@
     if !exists('g:multieditNoMappings')
         let g:multieditNoMappings = 0
     endif
+    if !exists('g:multieditNoMouseMappings')
+        let g:multieditNoMouseMappings = 0
+    endif
 
     if !exists('g:multieditAutoReset')
-        let g:multieditAutoReset = 1
+        let g:multieditAutoReset = 0
     endif
 
     if !exists('g:multieditAutoUpdate')
         let g:multieditAutoUpdate = 1
-    endif
-
-    if !exists('g:multieditMapToModeKeys')
-        let g:multieditMapToModeKeys = 1
-    endif
-
-    if !exists('g:multieditMapAddSelection')
-        let g:multieditMapAddSelection = '<leader>m'
-    endif
-
-    if !exists('g:multieditMapAddSelection')
-        let g:multieditMapAddMatches = '<leader>M'
-    endif
-
-    if !exists('g:multieditMapReset')
-        let g:multieditMapReset = '<leader>M'
     endif
 
 " }}
@@ -275,8 +262,9 @@
 """""""""""""""""""""
 " Mappings {{
 
-map <Plug>MultieditAddWord
-map <Plug>MultieditAddMatches
+map <Plug>MultiEditAddMark
+map <Plug>MultiEditAddRegion
+map <Plug>MultiEditAddMatch
 map <Plug>MultiEditClear
 map <Plug>MultiEditReset
 
@@ -300,9 +288,13 @@ if g:multieditNoMappings != 1
     nmap <leader>mp :call <SID>addMatch(-1)<CR>
 
     " Resetting
-    map <leader>mr :call <SID>clear()<CR>
-    map <leader>mR :call <SID>reset()<CR>
+    map <leader>md :call <SID>clear()<CR>
+    map <leader>mr :call <SID>reset()<CR>
 endif 
+
+if g:multieditNoMouseMappings != 1
+    nmap <C-LeftClick> <LeftClick>:call <SID>addMark("i")<CR>
+endif
 
 " }}
 
