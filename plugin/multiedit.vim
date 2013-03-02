@@ -247,7 +247,7 @@
             unlet b:first_selection
         endif
         syn clear MultiSelections
-        au! multiedit 
+        silent! au! multiedit 
     endfunc
     " }}
 
