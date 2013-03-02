@@ -314,42 +314,42 @@
 """""""""""""""""""""
 " Mappings {{
 
-map <Plug>MultiEditAddRegion :call <SID>addRegion()<CR>
+    map <Plug>MultiEditAddRegion :call <SID>addRegion()<CR>
 
-if g:multieditNoMappings != 1
-    " Adding markers...
-    " After the cursor
-    nmap <leader>ma :call <SID>addMark("a")<CR>
-    " Before the cursor
-    nmap <leader>mi :call <SID>addMark("i")<CR>
-    " At end of the line
-    nmap <leader>mA :call <SID>addMark("A")<CR>
-    " At beginning of line
-    nmap <leader>mI :call <SID>addMark("I")<CR>
+    if g:multiedit_no_mappings != 1
+        " Adding markers...
+        " After the cursor
+        nmap <leader>ma :call <SID>addMark("a")<CR>
+        " Before the cursor
+        nmap <leader>mi :call <SID>addMark("i")<CR>
+        " At end of the line
+        nmap <leader>mA :call <SID>addMark("A")<CR>
+        " At beginning of line
+        nmap <leader>mI :call <SID>addMark("I")<CR>
 
-    " Adding regions
-    " Add the current selection as a multiedit region
-    vmap <leader>mc <Plug>MultiEditAddRegion
-    " Add the character under the cursor as a region
-    nmap <leader>mc v<Plug>MultiEditAddRegion  
-    " Add the word object under the cursor as a region
-    nmap <leader>mC viw<Plug>MultiEditAddRegion  
+        " Adding regions
+        " Add the current selection as a multiedit region
+        vmap <leader>mc <Plug>MultiEditAddRegion
+        " Add the character under the cursor as a region
+        nmap <leader>mc v<Plug>MultiEditAddRegion  
+        " Add the word object under the cursor as a region
+        nmap <leader>mC viw<Plug>MultiEditAddRegion  
 
-    " Mark <cword> as region, then jump to and mark the next instance
-    nmap <leader>mn :call <SID>addMatch(1)<CR>
-    " Like ^ but previous
-    nmap <leader>mp :call <SID>addMatch(-1)<CR>
+        " Mark <cword> as region, then jump to and mark the next instance
+        nmap <leader>mn :call <SID>addMatch(1)<CR>
+        " Like ^ but previous
+        nmap <leader>mp :call <SID>addMatch(-1)<CR>
 
-    " Resetting
-    " Clear region/marker under the cursor
-    map <leader>md :call <SID>clear()<CR>
-    " Clear all regions and markers
-    map <leader>mr :call <SID>reset()<CR>
-endif 
+        " Resetting
+        " Clear region/marker under the cursor
+        map <leader>md :call <SID>clear()<CR>
+        " Clear all regions and markers
+        map <leader>mr :call <SID>reset()<CR>
+    endif 
 
-if g:multieditNoMouseMappings != 1
-    nmap <C-LeftClick> <LeftClick>:call <SID>addMark("i")<CR>
-endif
+    if g:multiedit_no_mouse_mappings != 1
+        nmap <C-LeftClick> <LeftClick>:call <SID>addMark("i")<CR>
+    endif
 
 " }}
 
