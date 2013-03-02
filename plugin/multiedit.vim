@@ -56,6 +56,10 @@
         let g:multieditMapAddMatches = '<leader>M'
     endif
 
+    if !exists('g:multieditMapReset')
+        let g:multieditMapReset = '<leader>M'
+    endif
+
 " }}
 
 
@@ -85,6 +89,9 @@
 """""""""""""""""""""
 " Core {{
 
+    let b:selections = {}
+    let b:markers = {}
+
     " addSelection()
     " Add selection to multiedit {{
     func! s:addSelection()
@@ -105,19 +112,14 @@
             let b:first_selection = sel
         endif
 
-        let hasCollision = 0
         if has_key(b:selections, lnum)
-            let hasCollision = s:hasCollision(sel, b:selections[lnum])
-            if !hasCollision
-                let b:selections[lnum] = b:selections[lnum] + [sel]
-            endif
+            " TODO: Check for collisions
+            let b:selections[lnum] = b:selections[lnum] + [sel]
         else
             let b:selections[lnum] = [sel]
         endif
 
-        if !hasCollision
-            call s:highlight(lnum, startcol, endcol)
-        endif
+        call s:highlight(lnum, startcol, endcol)
 
         "exit visual mode
         normal! v 
@@ -142,6 +144,7 @@
         let save_cursor = getpos('.')
 
         " ...
+        " '<,'>g/\Vcall/normal /call/^Mviw,m
 
         " restore cursor position
         call setpos('.', save_cursor)
@@ -154,13 +157,14 @@
         if !exists('b:selections')
             return
         endif
-        let colno = b:first_selection.col
 
         " posMode == 0 => place cursor at the start of selection (insert)
         " posMode == 1 => place after the selection (append)
         " posMode == 2 => change
         if a:posMode == 1
             let colno = b:first_selection.col + b:first_selection.len
+        else
+            let colno = b:first_selection.col
         endif
 
         call cursor(b:first_selection.line, colno)
@@ -173,17 +177,24 @@
 
         augroup multiedit 
             au!
-            if g:multiedit_autoupdate == 1
+            if g:multieditAutoUpdate == 1
                 au CursorMovedI * call s:updateSelections()
             else
                 au InsertLeave * call s:updateSelections()
             endif
             " au InsertEnter * call s:updateSelections(1)
-            if g:multiedit_autoreset == 1
+            if g:multieditAutoReset == 1
                 au InsertLeave * call s:reset()
             endif
             au InsertLeave * autocmd! multiedit
         augroup END
+    endfunc
+    " }}
+
+    " clear()
+    " TODO: Clears selected region {{
+    func! s:clear()
+        " ...
     endfunc
     " }}
 
@@ -215,6 +226,8 @@
 
         let editline = getline(b:first_selection.line)
         let line_length = len(editline)
+
+        " TODO: Subtract 1 from 2nd range when this selection is a marker
         let newtext = editline[(b:first_selection.col-1): (line_length-b:first_selection.suffix_length-1)]
 
         for line in sort(keys(b:selections))
@@ -262,33 +275,33 @@
 """""""""""""""""""""
 " Mappings {{
 
-map <Plug>MultieditAdd :<C-U>call <SID>addSelection()<CR>
-map <Plug>MultieditReset :<C-U>call <SID>reset()<CR>
+map <Plug>MultieditAddWord
+map <Plug>MultieditAddMatches
+map <Plug>MultiEditClear
+map <Plug>MultiEditReset
 
-map <Plug>MultieditInsert :<C-U>call <SID>startEdit(0)<CR>
-map <Plug>MultieditAppend :<C-U>call <SID>startEdit(1)<CR>
-map <Plug>MultieditChange :<C-U>call <SID>startEdit(2)<CR>
+map <Plug>MultiEditPrepend
+map <Plug>MultiEditAppend
+map <Plug>MultiEditReplace
 
 if g:multieditNoMappings != 1
-    call s:bindKey("n", g:multieditMapAddSelection, "viw<Plug>MultieditAdd")
-    call s:bindKey("v", g:multieditMapAddSelection, "<Plug>MultieditAdd")
+    " Adding markers
+    nmap <leader>ma :call <SID>addMark("a")<CR>
+    nmap <leader>mi :call <SID>addMark("i")<CR>
+    nmap <leader>mA :call <SID>addMark("A")<CR>
+    nmap <leader>mI :call <SID>addMark("I")<CR>
 
-    call s:bindKey("n", g:multieditMapAddMatches, "<Plug>MultieditMark")
-    call s:bindKey("v", g:multieditMapAddMatches, "<Plug>MultieditMark")
+    " Adding regions
+    vmap <leader>mc :call <SID>addRegion()<CR>
+    nmap <leader>mc v<leader>mc
+    nmap <leader>mC viw<leader>mc
 
-    if g:multieditMapToModeKeys == 1
-        let keyInsert = "I"
-        let keyAppend = "A"
-        let keyChange = "C"
-    else
-        let keyInsert = "<leader>I"
-        let keyAppend = "<leader>A"
-        let keyChange = "<leader>C"
-    endif
+    nmap <leader>mn :call <SID>addMatch(1)<CR>
+    nmap <leader>mp :call <SID>addMatch(-1)<CR>
 
-    call s:bindKey("n", keyInsert, "<Plug>MultieditInserti")
-    call s:bindKey("n", keyAppend, "<Plug>MultieditAppendi")
-    call s:bindKey("n", keyChange, "<Plug>MultieditChangea")
+    " Resetting
+    map <leader>mr :call <SID>clear()<CR>
+    map <leader>mR :call <SID>reset()<CR>
 endif 
 
 " }}
