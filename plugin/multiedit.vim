@@ -124,7 +124,7 @@
     " }}
 
     " addMark()
-    " Add a edit cursor {{
+    " Add an edit cursor {{
     func! s:addMark(mode)
         let mark = g:multiedit_mark_character[0]
 
