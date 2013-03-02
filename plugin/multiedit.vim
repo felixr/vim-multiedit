@@ -32,23 +32,23 @@
 """""""""""""""""""""
 " Settings {{
 
-    if !exists('g:multieditNoMappings')
-        let g:multieditNoMappings = 0
+    if !exists('g:multiedit_no_mappings')
+        let g:multiedit_no_mappings = 0
     endif
-    if !exists('g:multieditNoMouseMappings')
-        let g:multieditNoMouseMappings = 0
-    endif
-
-    if !exists('g:multieditAutoReset')
-        let g:multieditAutoReset = 0
+    if !exists('g:multiedit_no_mouse_mappings')
+        let g:multiedit_no_mouse_mappings = 0
     endif
 
-    if !exists('g:multieditAutoUpdate')
-        let g:multieditAutoUpdate = 1
+    if !exists('g:multiedit_auto_reset')
+        let g:multiedit_auto_reset = 0
     endif
 
-    if !exists('g:multieditMarkCharacter')
-        let g:multieditMarkCharacter = '|'
+    if !exists('g:multiedit_auto_update')
+        let g:multiedit_auto_update = 1
+    endif
+
+    if !exists('g:multiedit_mark_character')
+        let g:multiedit_mark_character = '|'
     endif
 
 " }}
@@ -80,9 +80,6 @@
 """""""""""""""""""""
 " Core {{
 
-    let b:selections = {}
-    let b:markers = {}
-
     " addSelection()
     " Add selection to multiedit {{
     func! s:addRegion()
@@ -104,7 +101,6 @@
         endif
 
         if has_key(b:selections, lnum)
-            " TODO: Check for collisions
             let b:selections[lnum] = b:selections[lnum] + [sel]
         else
             let b:selections[lnum] = [sel]
@@ -120,16 +116,16 @@
     " addMark()
     " Add a edit cursor {{
     func! s:addMark(mode)
-        let mark = g:multieditMarkCharacter[0]
+        let mark = g:multiedit_mark_character[0]
 
-        exe "normal! ".mode.g:multieditMarkCharacter."|v"
+        exe "normal! ".mode.g:multiedit_mark_character."|v"
         call s:addRegion()
     endfunc
     " }}
 
     " TODO: addMatch()
     " Add selection/word under the cursor and its occurrence {{
-    func! s:addMatch(direction)
+    func! s:addMatch(direction) 
         let save_cursor = getpos('.')
 
         " ...
@@ -166,13 +162,13 @@
 
         augroup multiedit 
             au!
-            if g:multieditAutoUpdate == 1
+            if g:multiedit_auto_update == 1
                 au CursorMovedI * call s:updateSelections()
             else
                 au InsertLeave * call s:updateSelections()
             endif
             " au InsertEnter * call s:updateSelections(1)
-            if g:multieditAutoReset == 1
+            if g:multiedit_auto_reset == 1
                 au InsertLeave * call s:reset()
             endif
             au InsertLeave * autocmd! multiedit
@@ -221,7 +217,7 @@
 
         for line in sort(keys(b:selections))
             let entries = b:selections[line]
-            let entries = sort(entries, "s:EntrySort")
+            let entries = sort(entries, "s:entrySort")
             let s:offset = 0
 
             for entry in entries
