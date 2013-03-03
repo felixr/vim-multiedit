@@ -40,7 +40,7 @@
     endif
 
     if !exists('g:multiedit_auto_reset')
-        let g:multiedit_auto_reset = 0
+        let g:multiedit_auto_reset = 1
     endif
 
     if !exists('g:multiedit_mark_character')
@@ -54,13 +54,21 @@
 " Utility {{
 
     hi default MultiSelections gui=reverse term=reverse cterm=reverse
+    " TODO: hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
 
     function! s:highlight(line, start, end)
+        " if b:first_selection.line == a:line && b:first_selection.col == a:start && b:first_selection.end == a:end
+        "     let synid = "MultiSelectionsFirst"
+        " else
+        "     let synid = "MultiSelections"
+        " endif
         execute "syn match MultiSelections '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
+        " execute "syn match ".synid." '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
     endfunction
 
     function! s:rehighlight()
         syn clear MultiSelections
+        " syn clear MultiSelectionsFirst
 
         for line in keys(b:selections)
             for sel in b:selections[line]
@@ -71,13 +79,6 @@
 
     function! s:entrySort(a,b)
         return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
-    endfunction
-
-    function! s:bindKey(mode, map, cmd)
-        if strlen(map) == 0
-            return
-        endif
-        exe mode.'map '.map. ' '.cmd
     endfunction
 
 " }}
@@ -122,7 +123,7 @@
     " addMark()
     " Add an edit cursor {{
     func! s:addMark(mode)
-        let mark = g:multiedit_mark_character[0]
+        let mark = g:multiedit_mark_character
 
         exe "normal! ".a:mode.g:multiedit_mark_character."v"
         call <SID>addRegion()
@@ -145,7 +146,7 @@
         let text = join(getline(line), "")[col:end]
 
         " Move to next iteration and reselect it
-        exe "normal! ".a:direction."\V".text."v".repeat("l", strlen(text))
+        exe "normal! ".a:direction."\V".text."v".repeat("l", strlen(text)-1)
 
         " Add the region!
         call <SID>addRegion()
@@ -163,10 +164,17 @@
         " mode == i|a|c => determines where to put the cursor to start
         " editing
         let colno = b:first_selection.col + b:first_selection.len
-        " let colno = b:first_selection.col
 
+        " call cursor(b:first_selection.line, b:first_selection.col)
+        " normal! v
         call cursor(b:first_selection.line, colno)
-        if colno == col("$")
+        " if getline(b:first_selection.line)[b:first_selection.col:colno-1] == g:multiedit_mark_character
+        "     normal! x
+        " endif
+        " normal! v
+
+        call s:updateSelections()
+        if col("$") == colno
             startinsert!
         else
             startinsert
@@ -245,6 +253,7 @@
             unlet b:first_selection
         endif
         syn clear MultiSelections
+        " syn clear MultiSelectionsFirst
         silent! au! multiedit 
     endfunc
     " }}
@@ -260,6 +269,7 @@
         endif
 
         syn clear MultiSelections
+        " syn clear MultiSelectionsFirst
 
         let editline = getline(b:first_selection.line)
         let line_length = len(editline)
