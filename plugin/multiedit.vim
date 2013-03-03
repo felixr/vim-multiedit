@@ -54,21 +54,20 @@
 " Utility {{
 
     hi default MultiSelections gui=reverse term=reverse cterm=reverse
-    " TODO: hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
+    hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
 
     function! s:highlight(line, start, end)
-        " if b:first_selection.line == a:line && b:first_selection.col == a:start && b:first_selection.end == a:end
-        "     let synid = "MultiSelectionsFirst"
-        " else
-        "     let synid = "MultiSelections"
-        " endif
-        execute "syn match MultiSelections '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
-        " execute "syn match ".synid." '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
+        if b:first_selection.line == a:line && b:first_selection.col == a:start && b:first_selection.end == a:end
+            let synid = "MultiSelectionsFirst"
+        else
+            let synid = "MultiSelections"
+        endif
+        execute "syn match ".synid." '\\%".a:line."l\\%".a:start."c\\_.*\\%".a:line."l\\%".a:end."c' containedin=ALL"
     endfunction
 
     function! s:rehighlight()
         syn clear MultiSelections
-        " syn clear MultiSelectionsFirst
+        syn clear MultiSelectionsFirst
 
         for line in keys(b:selections)
             for sel in b:selections[line]
@@ -160,9 +159,6 @@
             return
         endif
 
-        " let mode = input("Mode (i/a/c): ")
-        " mode == i|a|c => determines where to put the cursor to start
-        " editing
         let colno = b:first_selection.col + b:first_selection.len
 
         " call cursor(b:first_selection.line, b:first_selection.col)
@@ -253,7 +249,7 @@
             unlet b:first_selection
         endif
         syn clear MultiSelections
-        " syn clear MultiSelectionsFirst
+        syn clear MultiSelectionsFirst
         silent! au! multiedit 
     endfunc
     " }}
@@ -269,7 +265,7 @@
         endif
 
         syn clear MultiSelections
-        " syn clear MultiSelectionsFirst
+        syn clear MultiSelectionsFirst
 
         let editline = getline(b:first_selection.line)
         let line_length = len(editline)
