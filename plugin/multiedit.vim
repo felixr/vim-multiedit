@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 0.1.1
+" Version: 0.2.0
 " Author: Felix Riedel <felix.riedel at gmail.com> 
 " Maintainer: Henrik Lissner <henrik at lissner.net>
 " License: MIT license  {{{
@@ -24,10 +24,10 @@
 " }}}
 
 
-" if exists('g:loadedMultiedit') || &cp
-"     finish
-" endif
-" let g:loadedMultiedit = 1
+if exists('g:loaded_multiedit') || &cp
+    finish
+endif
+let g:loaded_multiedit = 1
 
 """""""""""""""""""""
 " Settings {{
