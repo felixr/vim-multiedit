@@ -53,8 +53,14 @@
 """""""""""""""""""""
 " Utility {{
 
-    hi default MultiSelections gui=reverse term=reverse cterm=reverse
-    hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
+    " Color highlights
+    if hlexists("MultiSelections")
+        hi default MultiSelections gui=reverse term=reverse cterm=reverse
+    endif
+    if hlexists("MultiSelectionsFirst")
+        " TODO: Change these colors
+        hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
+    endif
 
     function! s:highlight(line, start, end)
         if b:first_selection.line == a:line && b:first_selection.col == a:start && b:first_selection.end == a:end
