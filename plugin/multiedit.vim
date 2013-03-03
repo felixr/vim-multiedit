@@ -43,10 +43,6 @@
         let g:multiedit_auto_reset = 0
     endif
 
-    if !exists('g:multiedit_auto_update')
-        let g:multiedit_auto_update = 1
-    endif
-
     if !exists('g:multiedit_mark_character')
         let g:multiedit_mark_character = '|'
     endif
@@ -90,11 +86,12 @@
 """""""""""""""""""""
 " Core {{
 
-    " addSelection()
+    " addRegion()
     " Add selection to multiedit {{
     func! s:addRegion()
-        " restore selection
-        normal! gv
+        if mode() != "v"
+            normal! gv
+        endif
 
         " get selection parameters
         let lnum = line('.')
@@ -118,8 +115,7 @@
 
         call s:highlight(lnum, startcol, endcol)
 
-        "exit visual mode
-        normal! v 
+        normal! v
     endfunc
     " }}
 
@@ -128,8 +124,8 @@
     func! s:addMark(mode)
         let mark = g:multiedit_mark_character[0]
 
-        exe "normal! ".mode.g:multiedit_mark_character."|v"
-        call s:addRegion()
+        exe "normal! ".a:mode.g:multiedit_mark_character."v"
+        call <SID>addRegion()
     endfunc
     " }}
 
@@ -149,44 +145,36 @@
         let text = join(getline(line), "")[col:end]
 
         " Move to next iteration and reselect it
-        exe "normal! ".direction."\V".text."v".repeat("l", strlen(text))
+        exe "normal! ".a:direction."\V".text."v".repeat("l", strlen(text))
 
         " Add the region!
         call <SID>addRegion()
     endfunc
     " }}
 
-    " startEdit(posMode)
+    " startEdit(mode)
     " Begin editing all multiedit regions {{
-    func! s:startEdit(posMode)
+    func! s:startEdit()
         if !exists('b:selections')
             return
         endif
 
-        " posMode == 0 => place cursor at the start of selection (insert)
-        " posMode == 1 => place after the selection (append)
-        " posMode == 2 => change
-        if a:posMode == 1
-            let colno = b:first_selection.col + b:first_selection.len
-        else
-            let colno = b:first_selection.col
-        endif
+        " let mode = input("Mode (i/a/c): ")
+        " mode == i|a|c => determines where to put the cursor to start
+        " editing
+        let colno = b:first_selection.col + b:first_selection.len
+        " let colno = b:first_selection.col
 
         call cursor(b:first_selection.line, colno)
-        if a:posMode == 2
-            normal! v
-            call cursor(b:first_selection.line, (b:first_selection.col + b:first_selection.len)-1)
-            normal! c
-            call s:updateSelections()
+        if colno == col("$")
+            startinsert!
+        else
+            startinsert
         endif
 
         augroup multiedit 
             au!
-            if g:multiedit_auto_update == 1
-                au CursorMovedI * call s:updateSelections()
-            else
-                au InsertLeave * call s:updateSelections()
-            endif
+            au CursorMovedI * call s:updateSelections()
             " au InsertEnter * call s:updateSelections(1)
             if g:multiedit_auto_reset == 1
                 au InsertLeave * call s:reset()
@@ -326,36 +314,32 @@
     map <Plug>MultiEditAddRegion :call <SID>addRegion()<CR>
 
     if g:multiedit_no_mappings != 1
-        " Adding markers...
+        " [Adding markers]
         " After the cursor
         nmap <leader>ma :call <SID>addMark("a")<CR>
         " Before the cursor
         nmap <leader>mi :call <SID>addMark("i")<CR>
-        " At end of the line
-        nmap <leader>mA :call <SID>addMark("A")<CR>
-        " At beginning of line
-        nmap <leader>mI :call <SID>addMark("I")<CR>
 
-        " Adding regions
-        " Add the current selection as a multiedit region
-        vmap <leader>mc <Plug>MultiEditAddRegion
+        " [Adding regions]
+        vmap <leader>mm <Plug>MultiEditAddRegion  
         " Add the character under the cursor as a region
-        nmap <leader>mc v<Plug>MultiEditAddRegion  
+        nmap <leader>mm v<Plug>MultiEditAddRegion  
         " Add the word object under the cursor as a region
-        nmap <leader>mC viw<Plug>MultiEditAddRegion  
+        nmap <leader>mw viw<Plug>MultiEditAddRegion  
+
+        " Start edit mode!
+        nmap <leader>M :call <SID>startEdit()<CR>
 
         " Mark <cword> as region, then jump to and mark the next instance
-        nmap <leader>mn viw:call <SID>addMatch('/')<CR>
-        vmap <leader>mn :call <SID>addMatch('/')<CR>
+        " nmap <leader>mn viw:call <SID>addMatch('/')<CR>
         " Like ^ but previous
-        nmap <leader>mp viw:call <SID>addMatch('?')<CR>
-        vmap <leader>mp :call <SID>addMatch('?')<CR>
+        " nmap <leader>mp viw:call <SID>addMatch('?')<CR>
 
-        " Resetting
+        " [Resetting]
         " Clear region/marker under the cursor
-        map <leader>md :call <SID>clear()<CR>
+        map <silent> <leader>md :<C-U>call <SID>clear()<CR>
         " Clear all regions and markers
-        map <leader>mr :call <SID>reset()<CR>
+        nmap <silent> <leader>mr :<C-U>call <SID>reset()<CR>
     endif 
 
     if g:multiedit_no_mouse_mappings != 1
