@@ -33,8 +33,13 @@ Changelog           |multiedit-changelog|
 ==============================================================================
 INTRODUCTION					    *multiedit-introduction*
 
-Do you envy sublime text 2's multiple selection and editing? Let this plugin
-try to fill that text cursor shaped gap in your heart.
+Do you envy Sublime Text 2's multiple selection and editing? This plugin
+tries to fill that text cursor shaped gap in your heart.
+
+It works by adding selection "regions" and allowing you to edit them in sync,
+and offers you a multitude of ways to select those regions.
+
+Mappings are added
 
 Selections are added using <leader>m, and are highlighted. You can start
 editing using <leader>I or an alternative (see |multiedit-mappings|).
@@ -44,29 +49,43 @@ When you've finished your edits the selections will reset by default.
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
 
-  Action		Command		Notes
-  Add selection		<leader>m
-  Reset selections	<leader>M
-  Start editing		<leader>I	|text
-  Start editing		<leader>A	text|
-  Start editing		<leader>C	|
+  Mode	Action			    Command
+  n	Add marker before cursor    <leader>mi
+  n    	Add marker after cursor	    <leader>ma
+  nv   	Add selection		    <leader>mm
+  n    	Add word under cursor	    <leader>mw
+  n    	Begin editing		    <leader>M
+  n    	Clear all regions	    <leader>mr
+  n    	Clear region under cursor   <leader>md
 
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
 
 >
-    " Whether or not to update text across all selections as you type
-    let g:multieditAutoUpdate = 1
+    let g:multiedit_no_mappings = 0
+    let g:multiedit_no_mouse_mappings = 0
+    let g:multiedit_auto_reset = 1
+    let g:multiedit_mark_character = '|'
+<
 
-    " Should the selections reset when you're done editing?
-    let g:multieditAutoReset = 1
-
-    " Disable default keymappings? (Maybe you want to make your own?)
-    let g:multieditNoMappings = 0
+The highlight regions can be customized:
+>
+    hi default MultiSelections gui=reverse term=reverse cterm=reverse
+    hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
 <
 
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-03
+- New marker system enables you to place disposable markers
+- Change setting variable name convention
+  - Remove g:multedit_auto_update
+  - Add g:multiedit_mark_character
+  - Add <C-LeftMouse> mouse map
+- Highlight first selection differently (though colors need changing)
+- Add clear() and addMatch()
+- General code cleanup
 
 2013-02-23
 - Auto-reset on InsertLeave by default (can be disabled)

@@ -1,17 +1,19 @@
 ## About
 
-For those envious of [Sublime Text's](http://www.sublimetext.com/)
-multi-selection editing...
+Do you envy Sublime Text 2's multiple selection and editing? This plugin
+tries to fill that text cursor shaped gap in your heart.
 
-The plugin is demoed in the following screencast by felixr:
-http://shelr.tv/records/4fef105a966080237e00005e
+It works by adding selection "regions" and allowing you to edit them in sync,
+and offers you a multitude of ways to select those regions.
 
 ## Usage
 
 This fork provides the following mappings:
 
-    <leader>m       (normal/visual) Add selection
-    <leader>M       Reset selections
-    <leader>I       Start editing from start of the selection
-    <leader>A       Start editing from end of the selection
-    <leader>C       Start editing after deleting the selections
+    <leader>mw      Add word under cursor as a region
+    <leader>mm      Add current selection (or character) as a region
+    <leader>mi      Add a disposable region before cursor
+    <leader>ma      Add a disposable region after cursor
+    <leader>M       Begin synchronized editing across all regions
+    <leader>mr      Reset all regions
+    <leader>md      Delete region under cursor
