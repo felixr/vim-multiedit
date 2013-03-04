@@ -35,9 +35,6 @@ let g:loaded_multiedit = 1
     if !exists('g:multiedit_no_mappings')
         let g:multiedit_no_mappings = 0
     endif
-    if !exists('g:multiedit_no_mouse_mappings')
-        let g:multiedit_no_mouse_mappings = 0
-    endif
 
     if !exists('g:multiedit_auto_reset')
         let g:multiedit_auto_reset = 1
@@ -353,10 +350,6 @@ let g:loaded_multiedit = 1
         " Clear all regions and markers
         nmap <silent> <leader>mr :<C-U>call <SID>reset()<CR>
     endif 
-
-    if g:multiedit_no_mouse_mappings != 1
-        nmap <C-LeftClick> <LeftClick>:call <SID>addMark("i")<CR>
-    endif
 
 " }}
 
