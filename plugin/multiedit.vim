@@ -54,10 +54,10 @@ let g:loaded_multiedit = 1
 " Utility {{
 
     " Color highlights
-    if hlexists("MultiSelections")
+    if !hlexists("MultiSelections")
         hi default MultiSelections gui=reverse term=reverse cterm=reverse
     endif
-    if hlexists("MultiSelectionsFirst")
+    if !hlexists("MultiSelectionsFirst")
         " TODO: Change these colors
         hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
     endif
