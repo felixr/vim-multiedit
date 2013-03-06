@@ -1,27 +1,8 @@
 *multiedit.txt*	 Multi-editing for Vim   
 
 Version: 0.2.0
-Author: Felix Riedel <felix.riedel at gmail.com> 
-Maintainer: Henrik Lissner <henrik at lissner.net>
-License: MIT license  {{{
-    Permission is hereby granted, free of charge, to any person obtaining
-    a copy of this software and associated documentation files (the
-    "Software"), to deal in the Software without restriction, including
-    without limitation the rights to use, copy, modify, merge, publish,
-    distribute, sublicense, and/or sell copies of the Software, and to
-    permit persons to whom the Software is furnished to do so, subject to
-    the following conditions:
-    The above copyright notice and this permission notice shall be included
-    in all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-}}}
+Author: Henrik Lissner <henrik at lissner.net>
+License: MIT license
 
 CONTENTS                                                 *multiedit-contents*
 
@@ -36,15 +17,12 @@ INTRODUCTION					    *multiedit-introduction*
 Do you envy Sublime Text 2's multiple selection and editing? This plugin
 tries to fill that text cursor shaped gap in your heart.
 
-It works by adding selection "regions" and allowing you to edit them in sync,
-and offers you a multitude of ways to select those regions.
+It works by adding selection "regions" and allowing you to apply edits to all
+of them from one place. There is a multitude of ways to specify those regions
+(see |multiedit-mappings|).
 
-Mappings are added
-
-Selections are added using <leader>m, and are highlighted. You can start
-editing using <leader>I or an alternative (see |multiedit-mappings|).
-
-When you've finished your edits the selections will reset by default.
+NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by Felix
+Riedel <felix.riedel at gmail.com>.
 
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
@@ -63,19 +41,29 @@ SETTINGS                                            *multiedit-settings*
 
 >
     let g:multiedit_no_mappings = 0
-    let g:multiedit_no_mouse_mappings = 0
     let g:multiedit_auto_reset = 1
     let g:multiedit_mark_character = '|'
 <
 
 The highlight regions can be customized:
 >
-    hi default MultiSelections gui=reverse term=reverse cterm=reverse
-    hi default MultiSelectionsFirst gui=reverse term=reverse cterm=reverse
+    hi default MultieditRegions gui=reverse term=reverse cterm=reverse
+    hi default MultieditFirstRegion gui=reverse term=reverse cterm=reverse
 <
 
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-06
+- Move functions to autoload/multiedit.vim
+- Remove synchronized editing (caused more problems than helped)
+- Highlights keep up with edits
+- Remove mouse mappings
+- Replace <Plug>s with :commands, see plugin/multiedit.vim
+- Add "abort" keymaps that will disengage edit mode (and insert mode) if
+pressed. These are <CR>, <Up>, <Down> - which the plugin can't take into
+account.
+- Fix bugs with regions on the same line
 
 2013-03-03
 - New marker system enables you to place disposable markers
