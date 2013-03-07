@@ -1,10 +1,8 @@
 ## About
 
-Do you envy Sublime Text 2's multiple selection and editing? This plugin
-tries to fill that text cursor shaped gap in your heart.
-
-It works by adding selection "regions" and allowing you to edit them in sync,
-and offers you a multitude of ways to select those regions.
+Do you envy Sublime Text 2's multiple selection and editing feature? This plugin
+tries to fill that text cursor shaped gap in your heart by letting you
+specify "regions" of text and edit them all from one place.
 
 *(This plugin is based on https://github.com/felixr/vim-multiedit by Felix
 Riedel <felix.riedel at gmail.com>)*

@@ -17,9 +17,7 @@ INTRODUCTION					    *multiedit-introduction*
 Do you envy Sublime Text 2's multiple selection and editing? This plugin
 tries to fill that text cursor shaped gap in your heart.
 
-It works by adding selection "regions" and allowing you to apply edits to all
-of them from one place. There is a multitude of ways to specify those regions
-(see |multiedit-mappings|).
+It works by applying changes to all "regions" you've selected in a way that combines Vim's visual block edit mode and ST2's multi-selection feature. Check out |multiedit-mappings| to figure out how.
 
 NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by Felix
 Riedel <felix.riedel at gmail.com>.
