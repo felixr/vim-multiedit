@@ -39,7 +39,7 @@ endif
 " }}
 
 " Mappings {{
-com! -bar MultieditAddRegion call multiedit#addRegion()
+com! -bar -range MultieditAddRegion call multiedit#addRegion()
 com! -bar MultieditPrependMark call multiedit#addMark('i')
 com! -bar MultieditAppendMark call multiedit#addMark('a')
 
