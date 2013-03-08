@@ -25,14 +25,16 @@ Riedel <felix.riedel at gmail.com>.
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
 
-  Mode	Action			    Command
-  n	Add marker before cursor    <leader>mi
-  n    	Add marker after cursor	    <leader>ma
-  nv   	Add selection		    <leader>mm
-  n    	Add word under cursor	    <leader>mw
-  n    	Begin editing		    <leader>M
-  n    	Clear all regions	    <leader>mr
-  n    	Clear region under cursor   <leader>md
+  Mode	Action					Command
+  n	Add marker before cursor    		<leader>mi
+  n    	Add marker after cursor	    		<leader>ma
+  nv   	Add selection		    		<leader>mm
+  n    	Add word under cursor	    		<leader>mw
+  n   	Add word + jump to next occurrence	<leader>mn
+  n   	Add word + jump to prev occurrence	<leader>mp
+  n    	Begin editing		    		<leader>M
+  n    	Clear all regions	    		<leader>mr
+  n    	Clear region under cursor   		<leader>md
 
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
@@ -51,6 +53,10 @@ The highlight regions can be customized:
 
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-07
+- Implement next/previous match functionality (like CMD+D in ST2)
+- Fix :MultieditAddRegion not accepting ranges
 
 2013-03-06
 - Move functions to autoload/multiedit.vim

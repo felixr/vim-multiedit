@@ -64,22 +64,29 @@ func! multiedit#addMark(mode)
 endfunc
 " }}
 
-" TODO: addMatch() {{
-func! multiedit#addMatch()
-    if !index(['/', '?'], a:direction)
-        echoe "Did not specify a valid direction to search for a match."
+" addMatch(direction) {{
+func! multiedit#addMatch(direction)
+    if index(['?', '/'], a:direction) == -1
         return
     endif
 
-    " Get into visual mode
-    normal! v
 
-    let text = join(getline(line('.')), "")[col('v'):col('.')]
+    " Enter visual mode and select the word
+    normal! viw
+    call multiedit#addRegion()
 
-    " Move to next iteration and reselect it
-    exe "normal! ".a:direction."\V".escape(text, a:direction)."v".repeat("l", strlen(text)-1)
+    let word = escape(expand("<cword>"), a:direction)
+    let wordlen = strlen(word)
 
-    " Add the region!
+    " Jump to next instance of the word
+    exe "normal! ".a:direction."\\V".word.""
+    if a:direction == "?"
+        normal! n
+    endif
+    " Select the word
+    exe "normal! v".repeat("l", wordlen-1)
+
+    " Add it as a region
     call multiedit#addRegion()
 endfunc
 " }}

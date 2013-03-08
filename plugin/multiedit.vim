@@ -52,12 +52,13 @@ com! -bar MultieditReset call multiedit#reset()
 
 " TODO: Implement */#, like CMD-D in sublime text 2
 " Mark <cword> as region, then jump to and mark the next instance
-"com! -bar MultieditNextMatch call multiedit#addMatch("/")
+com! -bar -range MultieditNextMatch call multiedit#addMatch("/")
+
 " Like ^ but previous
-"com! -bar MultieditPreviousMatch call multiedit#addMatch("?")
+com! -bar -range MultieditPreviousMatch call multiedit#addMatch("?")
 
 " Change the 'main' region to the one under the cursor
-"com! -bar MultieditFocus call multiedit#focus()
+" com! -bar MultieditFocus call multiedit#focus()
 
 if g:multiedit_no_mappings != 1
     " Adding markers
@@ -68,6 +69,10 @@ if g:multiedit_no_mappings != 1
     vmap <leader>mm :MultieditAddRegion<CR>  
     nmap <leader>mm v:MultieditAddRegion<CR>
     nmap <leader>mw viw:MultieditAddRegion<CR>
+
+    " Add matches
+    nmap <leader>mn :MultieditNextMatch<CR>
+    nmap <leader>mp :MultieditPreviousMatch<CR>
 
     nmap <leader>M :Multiedit<CR>
 

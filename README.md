@@ -13,6 +13,8 @@ Riedel <felix.riedel at gmail.com>)*
     <leader>ma      Add a disposable region after cursor
     <leader>mw      Add word under cursor as a region
     <leader>mm      Add current selection (or character) as a region
+    <leader>mn      Add word under cursor and jump to next occurance
+    <leader>mp      Add word under cursor and jump to previous occurance
     <leader>M       Begin synchronized editing across all regions
     <leader>mr      Reset all regions
     <leader>md      Delete region under cursor
