@@ -57,9 +57,6 @@ com! -bar -range MultieditNextMatch call multiedit#addMatch("/")
 " Like ^ but previous
 com! -bar -range MultieditPreviousMatch call multiedit#addMatch("?")
 
-" Change the 'main' region to the one under the cursor
-" com! -bar MultieditFocus call multiedit#focus()
-
 if g:multiedit_no_mappings != 1
     " Adding markers
     nmap <leader>ma :MultieditAppendMark<CR>
