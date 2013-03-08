@@ -1,6 +1,6 @@
 *multiedit.txt*	 Multi-editing for Vim   
 
-Version: 0.2.0
+Version: 1.0.0
 Author: Henrik Lissner <henrik at lissner.net>
 License: MIT license
 
@@ -54,7 +54,7 @@ The highlight regions can be customized:
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
 
-2013-03-07
+2013-03-07 [1.0.0]
 - Implement next/previous match functionality (like CMD+D in ST2)
 - Fix :MultieditAddRegion not accepting ranges
 
