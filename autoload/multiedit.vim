@@ -19,15 +19,9 @@ func! multiedit#addRegion()
     endif
 
     if has_key(b:regions, line)
-        for region in b:regions[line]
-            " Check for region overlap. If it does, overwrite the old one.
-            if multiedit#isOverlapping(sel, region)
-                call multiedit#clear(region)
-                break
-            endif
-        endfor
-
-        let b:regions[line] = b:regions[line] + [sel]
+        if !multiedit#hasOverlap(sel)
+            let b:regions[line] = b:regions[line] + [sel]
+        endif
     else
         let b:regions[line] = [sel]
     endif
@@ -283,6 +277,21 @@ func! multiedit#isOverlapping(selA, selB)
             \ || a:selB.end == a:selA.col || a:selB.end == a:selA.end
             \ || (a:selB.col > a:selA.col && a:selB.end < a:selA.end)
             \ || (a:selB.col < a:selA.col && a:selB.end > a:selA.end)
+endfunc
+" }}
+
+" hasOverlap(sel) {{
+func! multiedit#hasOverlap(sel)
+    if type(a:sel) != 4 || !has_key(b:regions, a:sel.line)
+        return
+    endif
+
+    for region in b:regions[a:sel.line]
+        if multiedit#isOverlapping(a:sel, region)
+            return 1
+        endif
+    endfor
+    return
 endfunc
 " }}
 
