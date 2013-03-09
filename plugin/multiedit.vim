@@ -29,13 +29,9 @@ endif
 " }}
 
 " Color highlights {{
-if !hlexists("MultieditRegions")
-    hi default MultieditRegions gui=reverse term=reverse cterm=reverse
-endif
-if !hlexists("MultieditFirstRegion")
-    " TODO: Change these colors
-    hi default MultieditFirstRegion gui=reverse term=reverse cterm=reverse
-endif
+hi default MultieditRegions gui=reverse term=reverse cterm=reverse
+" hi default MultieditFirstRegion gui=reverse term=reverse cterm=reverse
+hi default link MultieditFirstRegion IncSearch
 " }}
 
 " Mappings {{
