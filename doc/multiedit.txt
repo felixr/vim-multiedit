@@ -37,6 +37,7 @@ MAPPINGS                                            *multiedit-mappings*
   n    	Begin editing		    		<leader>M
   n    	Clear all regions	    		<leader>mr
   n    	Clear region under cursor   		<leader>md
+  n    	Set region under cursor as primary	<leader>ms
 
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
