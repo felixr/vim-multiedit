@@ -18,3 +18,4 @@ Riedel <felix.riedel at gmail.com>)*
     <leader>M       Begin synchronized editing across all regions
     <leader>mr      Reset all regions
     <leader>md      Delete region under cursor
+    <leader>ms      Change region under cursor to 'main' region

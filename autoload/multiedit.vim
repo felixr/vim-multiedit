@@ -90,6 +90,25 @@ func! multiedit#addMatch(direction)
 endfunc
 " }}
 
+" set() {{
+" Set the region under the cursor to be the new first_region
+func! multiedit#set()
+    if !exists("b:regions")
+        return
+    endif
+
+    let sel = {"col": col('v'), "end": col('.'), "line":line('.')}
+
+    for region in b:regions[sel.line]
+        if multiedit#isOverlapping(sel, region)
+            let b:first_region = region
+        endif
+    endfor
+
+    call multiedit#rehighlight()
+endfunc
+" }}
+
 " edit() {{
 func! multiedit#edit()
     if !exists("b:regions")

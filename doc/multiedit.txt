@@ -1,6 +1,6 @@
 *multiedit.txt*	 Multi-editing for Vim   
 
-Version: 1.0.0
+Version: 1.1.0
 Author: Henrik Lissner <henrik at lissner.net>
 License: MIT license
 
@@ -14,13 +14,15 @@ Changelog           |multiedit-changelog|
 ==============================================================================
 INTRODUCTION					    *multiedit-introduction*
 
-Do you envy Sublime Text 2's multiple selection and editing? This plugin
-tries to fill that text cursor shaped gap in your heart.
+Do you envy Sublime Text 2's multiple selection and editing? This plugin tries
+to fill that text cursor shaped gap in your heart.
 
-It works by applying changes to all "regions" you've selected in a way that combines Vim's visual block edit mode and ST2's multi-selection feature. Check out |multiedit-mappings| to figure out how.
+It works by applying changes to all "regions" you've selected in a way that
+combines Vim's visual block edit mode and ST2's multi-selection feature. Check
+out |multiedit-mappings| to figure out how.
 
-NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by Felix
-Riedel <felix.riedel at gmail.com>.
+NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by
+Felix Riedel <felix.riedel at gmail.com>.
 
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
@@ -48,11 +50,19 @@ SETTINGS                                            *multiedit-settings*
 The highlight regions can be customized:
 >
     hi default MultieditRegions gui=reverse term=reverse cterm=reverse
-    hi default MultieditFirstRegion gui=reverse term=reverse cterm=reverse
+    hi default link MultieditFirstRegion IncSearch
 <
 
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-10 [1.1.0]
+- Fix :MultieditClear "Key not present" bug
+- Fix bug with editing consecutive regions on the same line
+- Fix region reordering issue caused by clearing individual regions
+- Refactor multiedit#update() completely
+- Add :MultieditSet and <leader>ms - allowing you to change the "editable"
+region.
 
 2013-03-07 [1.0.0]
 - Implement next/previous match functionality (like CMD+D in ST2)

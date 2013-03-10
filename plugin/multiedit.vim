@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 1.0.1
+" Version: 1.1.0
 " Author: Henrik Lissner <henrik at lissner.net>
 " License: MIT license 
 "
@@ -41,6 +41,9 @@ com! -bar MultieditAppendMark call multiedit#addMark('a')
 
 " Start edit mode!
 com! -bar Multiedit call multiedit#edit()
+" Set a new region as the edit region
+com! -bar MultieditSet call multiedit#set()
+
 " Clear region/marker under the cursor
 com! -bar -range MultieditClear call multiedit#clear()
 " Clear all regions and markers
@@ -65,6 +68,7 @@ if g:multiedit_no_mappings != 1
     " Add matches
     nmap <leader>mn :MultieditNextMatch<CR>
     nmap <leader>mp :MultieditPreviousMatch<CR>
+    nmap <leader>ms :MultieditSet<CR>
 
     nmap <leader>M :Multiedit<CR>
 
