@@ -209,7 +209,7 @@ func! multiedit#update(change)
     " Iterate through the lines where regions exist. And sort them by
     " sequence.
     for line in sort(keys(b:regions))
-        let regions = b:regions[line]
+        let regions = copy(b:regions[line])
         let regions = sort(regions, "multiedit#entrySort")
         let s:offset = 0
 
