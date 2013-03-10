@@ -216,38 +216,51 @@ func! multiedit#update(change)
         " Iterate through each region on this line
         for region in regions
 
-            " If this region is on the same line as first_region...
-            if region.line == b:first_region.line
-                
-                " ...move the highlight offset of regions after it
-                if region.col >= b:first_region.col
-                    let region.col += s:offset 
-                    let s:offset = s:offset + len(newtext) - region.len
+            " Is it time to commit the changes?
+            if a:change 
+
+                let region.col += s:offset 
+                if region.line != b:first_region.line || region.col != b:first_region.col
+                    
+                    " Get the old line
+                    let oldline = getline(region.line)
+
+                    " ...and assemble a new one
+                    let prefix = ''
+                    if region.col > 1
+                        let prefix = oldline[0:region.col-2]
+                    endif
+                    let suffix = oldline[(region.col+region.len-1):]
+
+                    " Update the line
+                    call setline(region.line, prefix.newtext.suffix) 
                 endif
 
-                " ...and update the length of the first_region
-                if region.col == b:first_region.col
-                    let region.len = len(newtext)
+                let s:offset = s:offset + len(newtext) - region.len
+                let region.len = len(newtext)
+
+            else
+
+                " Resize the highlight of first_region as it changes
+                if region.line == b:first_region.line
+
+                    " ...move the highlight offset of regions after it
+                    if region.col >= b:first_region.col
+                        let region.col += s:offset 
+                        let s:offset = s:offset + len(newtext) - b:first_region.len
+                    endif
+                    
+                    " ...and update the length of the first_region
+                    if region.col == b:first_region.col
+                        let region.len = len(newtext)
+                    endif
+
                 endif
+
+                " Rehighlight it
+                call multiedit#highlight(region.line, region.col, region.col+region.len)
 
             endif
-
-            if a:change != 0 && (region.line != b:first_region.line || region.col != b:first_region.col)
-                " Get the old line
-                let oldline = getline(region.line)
-
-                " ...and assemble a new one
-                let prefix = ''
-                if region.col > 1
-                    let prefix = oldline[0:region.col-2]
-                endif
-                let suffix = oldline[(region.col+region.len-1):]
-
-                " Update the line
-                call setline(region.line, prefix.newtext.suffix) 
-            endif
-
-            call multiedit#highlight(region.line, region.col, region.col+region.len)
 
         endfor
     endfor
