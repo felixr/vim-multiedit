@@ -2,7 +2,7 @@
 
 " addRegion() {{
 func! multiedit#addRegion()
-    if mode() != "v"
+    if mode() != 'v'
         normal! gv
     endif
 
@@ -19,7 +19,7 @@ func! multiedit#addRegion()
     endif
 
     if has_key(b:regions, line)
-        if !multiedit#hasOverlap(sel)
+        if multiedit#hasOverlap(sel) == -1
             let b:regions[line] = b:regions[line] + [sel]
         endif
     else
@@ -69,7 +69,6 @@ func! multiedit#addMatch(direction)
     if index(['?', '/'], a:direction) == -1
         return
     endif
-
 
     " Enter visual mode and select the word
     normal! viw
@@ -151,43 +150,37 @@ endfunc
 
 " clear() {{
 func! multiedit#clear(...)
-    let line = line(".")
-    if !exists("b:regions") || !has_key(b:regions, line)
+    if !exists("b:regions")
+        return
+    endif
+    
+    " The region to delete might have been provided as an argument.
+    if a:0 == 1 && type(a:1) == 4
+        let sel = a:1
+    else
+        let sel = {"col": col('v'), "end": col('.'), "line":line('.')}
+    endif
+
+    if !has_key(b:regions, sel.line)
         return
     endif
 
-    let mode = mode()
-    if mode == "V"
-        " If in visual line mode, delete all regions on the line
-        unlet b:regions[line]
-        return 1
-    elseif mode != "v"
-        " If not in visual mode, make it so we are!
-        normal! v
-    endif
-
-    " The region to delete might have been provided as an argument.
-    if a:0 > 1 && type(a:1) == 4
-        let sel = a:1
-        let line = sel.line
-    endif
-
     " Iterate through all regions on this line
-    for region in b:regions[line]
-        " If this is the first region, remove it. It will be set in the next
-        " iteration of this loop.
-        if region == b:first_region
-            unlet b:first_region
-        " ...as promised.
-        elseif !exists("b:first_region")
-            let b:first_region = region
-        endif
-
+    let i = 0
+    for region in b:regions[sel.line]
         " Does this cursor overlap with this region? If so, delete it.
-        if (exists("sel") && sel == region) || multiedit#isOverlapping(region, {"col": col("v"), "end": col(".")})
-            unlet b:regions[line]
-            break
+        if multiedit#isOverlapping(sel, region)
+
+            if region == b:first_region
+                unlet b:first_region
+                if len(b:regions[sel.line]) > 1
+                    let b:first_region = b:regions[sel.line][-1]
+                endif
+            endif
+
+            unlet b:regions[sel.line][i]
         endif
+        let i += 1
     endfor
 
     " The regions have changed. Update the highlights.
@@ -267,8 +260,9 @@ func! multiedit#update(change)
 endfunc
 " }}
 
-""""""""""""""""""""""""""
+""""""""""""""""""""""""""(
 " isOverlapping(selA, selB) {{
+" Checks to see if selA overlaps with selB
 func! multiedit#isOverlapping(selA, selB)
     " Check for invalid input
     if type(a:selA) != 4 || type(a:selB) != 4
@@ -280,25 +274,27 @@ func! multiedit#isOverlapping(selA, selB)
         return
     endif
 
-    return a:selB.col == a:selA.col || a:selB.col == a:selA.end 
-            \ || a:selB.end == a:selA.col || a:selB.end == a:selA.end
-            \ || (a:selB.col > a:selA.col && a:selB.end < a:selA.end)
-            \ || (a:selB.col < a:selA.col && a:selB.end > a:selA.end)
+    return a:selA.col == a:selB.col || a:selA.end == a:selB.end 
+                \ || a:selA.col == a:selB.end || a:selA.end == a:selB.col
+                \ || (a:selA.col > a:selB.col && a:selA.col < a:selB.end)
+                \ || (a:selA.end < a:selB.end && a:selA.end > a:selB.col)
 endfunc
 " }}
 
 " hasOverlap(sel) {{
+" Checks to see if any other regions overlap with this one. Returns -1 if not,
+" and the id of it otherwise (e.g. b:regions[line][id])
 func! multiedit#hasOverlap(sel)
     if type(a:sel) != 4 || !has_key(b:regions, a:sel.line)
-        return
+        return -1
     endif
 
-    for region in b:regions[a:sel.line]
-        if multiedit#isOverlapping(a:sel, region)
-            return 1
+    for i in range(len(b:regions[a:sel.line]))
+        if multiedit#isOverlapping(a:sel, b:regions[a:sel.line][i])
+            return i
         endif
     endfor
-    return
+    return -1
 endfunc
 " }}
 

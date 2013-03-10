@@ -42,11 +42,10 @@ com! -bar MultieditAppendMark call multiedit#addMark('a')
 " Start edit mode!
 com! -bar Multiedit call multiedit#edit()
 " Clear region/marker under the cursor
-com! -bar MultieditClear call multiedit#clear()
+com! -bar -range MultieditClear call multiedit#clear()
 " Clear all regions and markers
 com! -bar MultieditReset call multiedit#reset()
 
-" TODO: Implement */#, like CMD-D in sublime text 2
 " Mark <cword> as region, then jump to and mark the next instance
 com! -bar -range MultieditNextMatch call multiedit#addMatch("/")
 
@@ -70,7 +69,7 @@ if g:multiedit_no_mappings != 1
     nmap <leader>M :Multiedit<CR>
 
     " Resetting
-    map <silent> <leader>md :MultieditClear<CR>
+    nmap <silent> <leader>md :MultieditClear<CR>
     nmap <silent> <leader>mr :MultieditReset<CR>
 endif 
 " }}
