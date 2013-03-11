@@ -15,7 +15,8 @@ Riedel <felix.riedel at gmail.com>)*
     <leader>mm      Add current selection (or character) as a region
     <leader>mn      Add word under cursor and jump to next occurance
     <leader>mp      Add word under cursor and jump to previous occurance
-    <leader>M       Begin synchronized editing across all regions
+    <leader>M       Begin synchronized editing from end of word
+    <leader>I       Begin synchronized editing from start of word
     <leader>mr      Reset all regions
     <leader>md      Delete region under cursor
     <leader>ms      Change region under cursor to 'main' region
