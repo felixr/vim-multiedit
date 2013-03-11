@@ -82,11 +82,6 @@ func! multiedit#addMatch(direction)
     if a:direction == "?"
         normal! n
     endif
-    " Select the word
-    exe "normal! v".repeat("l", wordlen-1)
-
-    " Add it as a region
-    call multiedit#addRegion()
 endfunc
 " }}
 
