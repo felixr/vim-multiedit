@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 1.1.2
+" Version: 1.1.3
 " Author: Henrik Lissner <henrik at lissner.net>
 " License: MIT license 
 "
@@ -25,6 +25,10 @@ endif
 
 if !exists('g:multiedit_mark_character')
     let g:multiedit_mark_character = '|'
+endif
+
+if !exists('g:multiedit_auto_restore')
+    let g:multiedit_auto_restore = 1
 endif
 " }}
 
