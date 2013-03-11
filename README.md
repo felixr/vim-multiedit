@@ -24,3 +24,4 @@ Riedel <felix.riedel at gmail.com>)*
     <leader>mr      Reset all regions
     <leader>md      Delete region under cursor
     <leader>ms      Change region under cursor to 'main' region
+    <leader>mu      Restore regions from previous use (if applicable)
