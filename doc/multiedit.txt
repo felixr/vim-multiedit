@@ -1,6 +1,6 @@
 *multiedit.txt*	 Multi-editing for Vim   
 
-Version: 1.1.0
+Version: 1.1.1
 Author: Henrik Lissner <henrik at lissner.net>
 License: MIT license
 
@@ -27,18 +27,19 @@ Felix Riedel <felix.riedel at gmail.com>.
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
 
-  Mode	Action					Command
-  n	Add marker before cursor    		<leader>mi
-  n    	Add marker after cursor	    		<leader>ma
-  nv   	Add selection		    		<leader>mm
-  n    	Add word under cursor	    		<leader>mw
-  n   	Add word + jump to next occurrence	<leader>mn
-  n   	Add word + jump to prev occurrence	<leader>mp
-  n    	Begin editing		    		<leader>M
-  n    	Clear all regions	    		<leader>mr
-  n    	Clear region under cursor   		<leader>md
-  n    	Set region under cursor as primary	<leader>ms
-
+  Action				  Key map     Command
+  (n)  Add marker before cursor		  <leader>mi  :MultieditPrependMark
+  (n)  Add marker after cursor		  <leader>ma  :MultieditAppendMark
+  (nv) Add selection			  <leader>mm  :MultieditAddRegion
+  (n)  Add word under cursor		  <leader>mw  viw:MultieditAddRegion
+  (n)  Add word & go to next occurrence   <leader>mn  :MultieditNextMatch
+  (n)  Add word & go to prev occurrence   <leader>mp  :MultieditPreviousMatch
+  (n)  Begin editing			  <leader>M   :Multiedit
+  (n)  Begin editing			  <leader>I   :Multiedit!
+  (n)  Clear all regions		  <leader>mr  :MultieditReset
+  (n)  Clear region under cursor	  <leader>md  :MultieditClear
+  (n)  Set region under cursor as primary <leader>ms  :MultieditSet
+  
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
 
@@ -57,13 +58,19 @@ The highlight regions can be customized:
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
 
+2013-03-11 [1.1.1]
+- Add :Multiedit! - will move insert caret to the start of the word, instead
+  of the end. Kep map for this is <leader>I
+- Fix automatically adding next/prev occurrence when using :MultieditNextMatch
+  and :MultieditPreviousMatch
+
 2013-03-10 [1.1.0]
 - Fix :MultieditClear "Key not present" bug
 - Fix bug with editing consecutive regions on the same line
 - Fix region reordering issue caused by clearing individual regions
 - Refactor multiedit#update() completely
 - Add :MultieditSet and <leader>ms - allowing you to change the "editable"
-region.
+  region.
 
 2013-03-07 [1.0.0]
 - Implement next/previous match functionality (like CMD+D in ST2)
@@ -76,8 +83,8 @@ region.
 - Remove mouse mappings
 - Replace <Plug>s with :commands, see plugin/multiedit.vim
 - Add "abort" keymaps that will disengage edit mode (and insert mode) if
-pressed. These are <CR>, <Up>, <Down> - which the plugin can't take into
-account.
+  pressed. These are <CR>, <Up>, <Down> - which the plugin can't take into
+  account.
 - Fix bugs with regions on the same line
 
 2013-03-03

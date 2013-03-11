@@ -105,15 +105,15 @@ endfunc
 " }}
 
 " edit() {{
-func! multiedit#edit()
+func! multiedit#edit(bang)
     if !exists("b:regions")
         return
     endif
 
     let lastcol = b:first_region.col + b:first_region.len
 
-    " Move the cursor to the end of the first region
-    call cursor(b:first_region.line, lastcol)
+    " Move cursor to: if <bang> is provided ? the start : the end of the word.
+    call cursor(b:first_region.line, a:bang ==# '!' ? b:first_region.col : lastcol)
 
     " Set up some 'abort' mappings, because they can't be accounted for. They
     " will unmap themselves once they're pressed.

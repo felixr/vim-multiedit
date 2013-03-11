@@ -40,7 +40,7 @@ com! -bar MultieditPrependMark call multiedit#addMark('i')
 com! -bar MultieditAppendMark call multiedit#addMark('a')
 
 " Start edit mode!
-com! -bar Multiedit call multiedit#edit()
+com! -bar -bang Multiedit call multiedit#edit(<q-bang>)
 " Set a new region as the edit region
 com! -bar MultieditSet call multiedit#set()
 
@@ -71,6 +71,7 @@ if g:multiedit_no_mappings != 1
     nmap <leader>ms :MultieditSet<CR>
 
     nmap <leader>M :Multiedit<CR>
+    nmap <leader>I :Multiedit!<CR>
 
     " Resetting
     nmap <silent> <leader>md :MultieditClear<CR>
