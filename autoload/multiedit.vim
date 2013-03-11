@@ -19,7 +19,7 @@ func! multiedit#addRegion()
     endif
 
     if has_key(b:regions, line)
-        if multiedit#hasOverlap(sel) == -1
+        if s:hasOverlap(sel) == -1
             let b:regions[line] = b:regions[line] + [sel]
         endif
     else
@@ -27,7 +27,7 @@ func! multiedit#addRegion()
     endif
 
     " Highlight the region
-    call multiedit#highlight(line, startcol, endcol)
+    call s:highlight(line, startcol, endcol)
 
     " Exit visual mode
     normal! v
@@ -56,7 +56,7 @@ func! multiedit#addMark(mode)
             endif
         endfor
 
-        call multiedit#rehighlight()
+        call s:rehighlight()
     endif
 
     " ...then make it a region
@@ -95,12 +95,12 @@ func! multiedit#set()
     let sel = {"col": col('v'), "end": col('.'), "line":line('.')}
 
     for region in b:regions[sel.line]
-        if multiedit#isOverlapping(sel, region)
+        if s:isOverlapping(sel, region)
             let b:first_region = region
         endif
     endfor
 
-    call multiedit#rehighlight()
+    call s:rehighlight()
 endfunc
 " }}
 
@@ -134,7 +134,7 @@ func! multiedit#edit(bang, ...)
 
     " Set up some 'abort' mappings, because they can't be accounted for. They
     " will unmap themselves once they're pressed.
-    call multiedit#maps(0)
+    call s:maps(0)
 
     " Start insert mode. Since there's no way to mimic 'a' with :normal, we
     " have to do it manually:
@@ -152,7 +152,7 @@ func! multiedit#edit(bang, ...)
         " Once you leave INSERT, apply changes and delete this augroup
         au InsertLeave * 
                     \ call multiedit#update(1) |
-                    \ call multiedit#maps(1) |
+                    \ call s:maps(1) |
                     \ au! multiedit
 
         if g:multiedit_auto_reset == 1
@@ -200,7 +200,7 @@ func! multiedit#clear(...)
     let i = 0
     for region in b:regions[sel.line]
         " Does this cursor overlap with this region? If so, delete it.
-        if multiedit#isOverlapping(sel, region)
+        if s:isOverlapping(sel, region)
 
             if region == b:first_region
                 unlet b:first_region
@@ -215,7 +215,7 @@ func! multiedit#clear(...)
     endfor
 
     " The regions have changed. Update the highlights.
-    call multiedit#rehighlight()
+    call s:rehighlight()
 endfunc
 " }}
 
@@ -241,7 +241,7 @@ func! multiedit#update(change)
     " sequence.
     for line in sort(keys(b:regions))
         let regions = copy(b:regions[line])
-        let regions = sort(regions, "multiedit#entrySort")
+        let regions = sort(regions, "s:entrySort")
         let s:offset = 0
 
         " Iterate through each region on this line
@@ -289,7 +289,7 @@ func! multiedit#update(change)
                 endif
 
                 " Rehighlight it
-                call multiedit#highlight(region.line, region.col, region.col+region.len)
+                call s:highlight(region.line, region.col, region.col+region.len)
 
             endif
 
@@ -307,7 +307,7 @@ endfunc
 """"""""""""""""""""""""""(
 " isOverlapping(selA, selB) {{
 " Checks to see if selA overlaps with selB
-func! multiedit#isOverlapping(selA, selB)
+func! s:isOverlapping(selA, selB)
     " Check for invalid input
     if type(a:selA) != 4 || type(a:selB) != 4
         return
@@ -318,6 +318,7 @@ func! multiedit#isOverlapping(selA, selB)
         return
     endif
 
+    " Check for overlapping
     return a:selA.col == a:selB.col || a:selA.end == a:selB.end 
                 \ || a:selA.col == a:selB.end || a:selA.end == a:selB.col
                 \ || (a:selA.col > a:selB.col && a:selA.col < a:selB.end)
@@ -328,13 +329,13 @@ endfunc
 " hasOverlap(sel) {{
 " Checks to see if any other regions overlap with this one. Returns -1 if not,
 " and the id of it otherwise (e.g. b:regions[line][id])
-func! multiedit#hasOverlap(sel)
+func! s:hasOverlap(sel)
     if type(a:sel) != 4 || !has_key(b:regions, a:sel.line)
         return -1
     endif
 
     for i in range(len(b:regions[a:sel.line]))
-        if multiedit#isOverlapping(a:sel, b:regions[a:sel.line][i])
+        if s:isOverlapping(a:sel, b:regions[a:sel.line][i])
             return i
         endif
     endfor
@@ -343,8 +344,8 @@ endfunc
 " }}
 
 " highlight(line, start, end) {{
-func! multiedit#highlight(line, start, end)
-    if !exists("b:first_region") || b:first_region.line == a:line && b:first_region.col == a:start
+func! s:highlight(line, start, end)
+    if !exists("b:first_region") || (b:first_region.line == a:line && b:first_region.col == a:start)
         let synid = "MultieditFirstRegion"
     else
         let synid = "MultieditRegions"
@@ -354,35 +355,35 @@ endfunc
 " }}
 
 " rehighlight() {{
-func! multiedit#rehighlight()
+func! s:rehighlight()
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
 
     " Go through regions and rehighlight them
     for line in keys(b:regions)
         for sel in b:regions[line]
-            call multiedit#highlight(line, sel.col, sel.end)
+            call s:highlight(line, sel.col, sel.end)
         endfor
     endfor
 endfunc
 " }}
 
 " unmap() {{
-func! multiedit#maps(unmap)
+func! s:maps(unmap)
     if a:unmap
         iunmap <buffer><silent> <CR>
         iunmap <buffer><silent> <Up>
         iunmap <buffer><silent> <Down>
     else
-        inoremap <buffer><silent> <CR> <Esc><CR>:call multiedit#maps(1)<CR>
-        inoremap <buffer><silent> <Up> <Esc><Up>:call multiedit#maps(1)<CR>
-        inoremap <buffer><silent> <Down> <Esc><Down>:call multiedit#maps(1)<CR>
+        inoremap <buffer><silent> <CR> <Esc><CR>:call s:maps(1)<CR>
+        inoremap <buffer><silent> <Up> <Esc><Up>:call s:maps(1)<CR>
+        inoremap <buffer><silent> <Down> <Esc><Down>:call s:maps(1)<CR>
     endif
 endfunc
 " }}
 
 " entrySort() {{
-func! multiedit#entrySort(a, b)
+func! s:entrySort(a, b)
     return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
 endfunc
 " }}
