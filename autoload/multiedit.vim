@@ -106,8 +106,10 @@ endfunc
 
 " edit() {{
 func! multiedit#edit(bang, ...)
-    if !exists("b:regions")
-        return
+    if !exists("b:regions") 
+        if g:multiedit_auto_restore == 0 || !multiedit#again()
+            return
+        endif
     endif
 
     let lastcol = b:first_region.col + b:first_region.len
@@ -165,10 +167,13 @@ endfunc
 
 " reset() {{
 func! multiedit#reset()
+    let b:regions_last = {}
     if exists("b:regions")
+        let b:regions_last["regions"] = b:regions
         unlet b:regions
     endif
     if exists("b:first_region")
+        let b:regions_last["first"] = b:first_region
         unlet b:first_region
     endif
 
@@ -301,6 +306,22 @@ func! multiedit#update(change)
 
     " Restore cursor position
     call setpos('.', b:save_cursor)
+endfunc
+" }}
+
+" again() {{
+" Restore last region selections. Returns 1 on success, 0 on failure.
+func! multiedit#again()
+    if !exists("b:regions_last")
+        echom "No regions to restore!"
+        return
+    endif
+
+    let b:first_region = b:regions_last["first"]
+    let b:regions = b:regions_last["regions"]
+
+    call multiedit#update(0)
+    return 1
 endfunc
 " }}
 

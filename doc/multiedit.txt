@@ -29,23 +29,33 @@ MAPPINGS                                            *multiedit-mappings*
   Action				  Key map     Command
   (n)  Add marker before cursor		  <leader>mi  :MultieditPrependMark
   (n)  Add marker after cursor		  <leader>ma  :MultieditAppendMark
-  (nv) Add selection			  <leader>mm  :MultieditAddRegion
-  (n)  Add word under cursor		  <leader>mw  viw:MultieditAddRegion
+  (nv) Add word (or visual selection)	  <leader>mm  :MultieditAddRegion
   (n)  Add word & go to next occurrence   <leader>mn  :MultieditNextMatch
   (n)  Add word & go to prev occurrence   <leader>mp  :MultieditPreviousMatch
   (n)  Begin editing			  <leader>M   :Multiedit
-  (n)  Begin editing			  <leader>I   :Multiedit!
+  (n)  Begin editing in change mode	  <leader>C   :Multiedit!
   (n)  Clear all regions		  <leader>mr  :MultieditReset
   (n)  Clear region under cursor	  <leader>md  :MultieditClear
   (n)  Set region under cursor as primary <leader>ms  :MultieditSet
+  (n)  Restore previous regions		  <leader>mu  :MultieditRestore
   
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
 
 >
+    " Disable all mappings? Default: no
     let g:multiedit_no_mappings = 0
+
+    " Reset all regions on InsertLeave when finished? Default: Yes
     let g:multiedit_auto_reset = 1
+
+    " Disposable marker character (beware characters with strlen > 1 - like
+    " special symbols
     let g:multiedit_mark_character = '|'
+
+    " If no selections are present and you initiate edit mode, should it
+    " restore the previous regions? Default: Yes
+    let g:multiedit_auto_restore = 1
 <
 
 The highlight regions can be customized:

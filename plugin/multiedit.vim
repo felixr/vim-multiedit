@@ -55,20 +55,25 @@ com! -bar -range MultieditNextMatch call multiedit#addMatch("/")
 " Like ^ but previous
 com! -bar -range MultieditPreviousMatch call multiedit#addMatch("?")
 
+" Load previous regions, if available
+com! -bar MultieditRestore call multiedit#again()
+
 if g:multiedit_no_mappings != 1
-    " Adding markers
+    " Markers
     nmap <leader>ma :MultieditAppendMark<CR>
     nmap <leader>mi :MultieditPrependMark<CR>
 
-    " Adding regions
+    " Regions
     vmap <leader>mm :MultieditAddRegion<CR>  
     nmap <leader>mm viw:MultieditAddRegion<CR>
-
-    " Add matches
+    nmap <leader>ms :MultieditSet<CR>
+    nmap <leader>mu :MultieditRestore<CR>
+    
+    " Matches
     nmap <leader>mn :MultieditNextMatch<CR>
     nmap <leader>mp :MultieditPreviousMatch<CR>
-    nmap <leader>ms :MultieditSet<CR>
 
+    " Edit modes
     nmap <leader>M :Multiedit<CR>
     nmap <leader>C :Multiedit!<CR>
 
