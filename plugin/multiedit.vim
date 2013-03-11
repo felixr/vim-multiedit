@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 1.1.1
+" Version: 1.1.2
 " Author: Henrik Lissner <henrik at lissner.net>
 " License: MIT license 
 "
@@ -62,8 +62,7 @@ if g:multiedit_no_mappings != 1
 
     " Adding regions
     vmap <leader>mm :MultieditAddRegion<CR>  
-    nmap <leader>mm v:MultieditAddRegion<CR>
-    nmap <leader>mw viw:MultieditAddRegion<CR>
+    nmap <leader>mm viw:MultieditAddRegion<CR>
 
     " Add matches
     nmap <leader>mn :MultieditNextMatch<CR>
@@ -71,7 +70,7 @@ if g:multiedit_no_mappings != 1
     nmap <leader>ms :MultieditSet<CR>
 
     nmap <leader>M :Multiedit<CR>
-    nmap <leader>I :Multiedit!<CR>
+    nmap <leader>C :Multiedit!<CR>
 
     " Resetting
     nmap <silent> <leader>md :MultieditClear<CR>

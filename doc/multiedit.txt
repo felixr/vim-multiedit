@@ -1,6 +1,5 @@
 *multiedit.txt*	 Multi-editing for Vim   
 
-Version: 1.1.1
 Author: Henrik Lissner <henrik at lissner.net>
 License: MIT license
 
@@ -57,6 +56,11 @@ The highlight regions can be customized:
 
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-11 [1.1.2]
+- Change :Multiedit! functionality to delete word before editing (like
+  [C]hange command). Use <leader>C to initiate this mode.
+- Remove <leader>mw - now <leader>mm does it's job (viw:MultieditAddRegion<CR>)
 
 2013-03-11 [1.1.1]
 - Add :Multiedit! - will move insert caret to the start of the word, instead

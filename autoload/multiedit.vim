@@ -105,15 +105,32 @@ endfunc
 " }}
 
 " edit() {{
-func! multiedit#edit(bang)
+func! multiedit#edit(bang, ...)
     if !exists("b:regions")
         return
     endif
 
     let lastcol = b:first_region.col + b:first_region.len
 
-    " Move cursor to: if <bang> is provided ? the start : the end of the word.
-    call cursor(b:first_region.line, a:bang ==# '!' ? b:first_region.col : lastcol)
+    " If bang exists, clear the word (and replace it with a marker) before you
+    " start editing
+    if a:bang ==# '!'
+        " Select the word
+        call cursor(b:first_region.line, b:first_region.col)
+        normal! v
+        call cursor(b:first_region.line, lastcol-1)
+
+        " Delete it, add the marker, and move the cursor ahead of it
+        normal! d
+        call multiedit#update(0)
+        call cursor(b:first_region.line, b:first_region.col)
+
+        " Refresh the lastcol (it's likely moved!)
+        let lastcol = b:first_region.col + b:first_region.len
+    else
+        " Move cursor to the end of the word
+        call cursor(b:first_region.line, lastcol)
+    endif
 
     " Set up some 'abort' mappings, because they can't be accounted for. They
     " will unmap themselves once they're pressed.
