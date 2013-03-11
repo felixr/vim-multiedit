@@ -67,10 +67,17 @@ The highlight regions can be customized:
 ==============================================================================
 CHANGELOG					    *multiedit-changelog*
 
+2013-03-11 [1.1.3]
+- Add :MultieditRestore to restore previous regions (if available). Uses
+  <leader>mu
+- Add g:multiedit_auto_restore to control :MultieditRestore being called when
+  edit mode is initiated without regions specified.
+
 2013-03-11 [1.1.2]
 - Change :Multiedit! functionality to delete word before editing (like
   [C]hange command). Use <leader>C to initiate this mode.
-- Remove <leader>mw - now <leader>mm does it's job (viw:MultieditAddRegion<CR>)
+- Remove <leader>mw - now <leader>mm does it's job 
+  (viw:MultieditAddRegion<CR>)
 
 2013-03-11 [1.1.1]
 - Add :Multiedit! - will move insert caret to the start of the word, instead
