@@ -1,3 +1,5 @@
+# vim-multiedit - Multi-selection and editing in vim
+
 ## About
 
 Do you envy Sublime Text 2's multiple selection and editing feature? This plugin
