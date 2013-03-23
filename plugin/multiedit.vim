@@ -40,14 +40,13 @@ hi default link MultieditFirstRegion IncSearch
 
 " Mappings {{
 com! -bar -range MultieditAddRegion call multiedit#addRegion()
-com! -bar MultieditPrependMark call multiedit#addMark('i')
-com! -bar MultieditAppendMark call multiedit#addMark('a')
+com! -bar -nargs=1 MultieditAddMark call multiedit#addMark(<q-args>)
 
 " Start edit mode!
 com! -bar -bang Multiedit call multiedit#edit(<q-bang>)
+
 " Set a new region as the edit region
 com! -bar MultieditSet call multiedit#set()
-
 " Clear region/marker under the cursor
 com! -bar -range MultieditClear call multiedit#clear()
 " Clear all regions and markers
@@ -58,8 +57,8 @@ com! -bar MultieditRestore call multiedit#again()
 
 if g:multiedit_no_mappings != 1
     " Markers
-    nmap <leader>ma :MultieditAppendMark<CR>
-    nmap <leader>mi :MultieditPrependMark<CR>
+    nmap <leader>ma :MultieditAddMark a<CR>
+    nmap <leader>mi :MultieditAddMark i<CR>
 
     " Regions
     vmap <leader>mm :MultieditAddRegion<CR>  
