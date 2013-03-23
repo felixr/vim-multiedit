@@ -64,27 +64,6 @@ func! multiedit#addMark(mode)
 endfunc
 " }}
 
-" addMatch(direction) {{
-func! multiedit#addMatch(direction)
-    if index(['?', '/'], a:direction) == -1
-        return
-    endif
-
-    " Enter visual mode and select the word
-    normal! viw
-    call multiedit#addRegion()
-
-    let word = escape(expand("<cword>"), a:direction)
-    let wordlen = strlen(word)
-
-    " Jump to next instance of the word
-    exe "normal! ".a:direction."\\V".word.""
-    if a:direction == "?"
-        normal! n
-    endif
-endfunc
-" }}
-
 " set() {{
 " Set the region under the cursor to be the new first_region
 func! multiedit#set()

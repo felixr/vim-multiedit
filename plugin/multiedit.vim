@@ -53,12 +53,6 @@ com! -bar -range MultieditClear call multiedit#clear()
 " Clear all regions and markers
 com! -bar MultieditReset call multiedit#reset()
 
-" Mark <cword> as region, then jump to and mark the next instance
-com! -bar -range MultieditNextMatch call multiedit#addMatch("/")
-
-" Like ^ but previous
-com! -bar -range MultieditPreviousMatch call multiedit#addMatch("?")
-
 " Load previous regions, if available
 com! -bar MultieditRestore call multiedit#again()
 
@@ -74,8 +68,8 @@ if g:multiedit_no_mappings != 1
     nmap <leader>mu :MultieditRestore<CR>
     
     " Matches
-    nmap <leader>mn :MultieditNextMatch<CR>
-    nmap <leader>mp :MultieditPreviousMatch<CR>
+    nmap <leader>mn viw:MultieditAddRegion<CR>/<C-r>=expand("<cword>")<CR><CR>
+    nmap <leader>mp viw:MultieditAddRegion<CR>?<C-r>=expand("<cword>")<CR><CR>
 
     " Edit modes
     nmap <leader>M :Multiedit<CR>
