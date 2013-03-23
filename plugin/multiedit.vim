@@ -34,7 +34,6 @@ endif
 
 " Color highlights {{
 hi default MultieditRegions gui=reverse term=reverse cterm=reverse
-" hi default MultieditFirstRegion gui=reverse term=reverse cterm=reverse
 hi default link MultieditFirstRegion IncSearch
 " }}
 
@@ -45,8 +44,6 @@ com! -bar -nargs=1 MultieditAddMark call multiedit#addMark(<q-args>)
 " Start edit mode!
 com! -bar -bang Multiedit call multiedit#edit(<q-bang>)
 
-" Set a new region as the edit region
-com! -bar MultieditSet call multiedit#set()
 " Clear region/marker under the cursor
 com! -bar -range MultieditClear call multiedit#clear()
 " Clear all regions and markers
@@ -63,7 +60,6 @@ if g:multiedit_no_mappings != 1
     " Regions
     vmap <leader>mm :MultieditAddRegion<CR>  
     nmap <leader>mm viw:MultieditAddRegion<CR>
-    nmap <leader>ms :MultieditSet<CR>
     nmap <leader>mu :MultieditRestore<CR>
     
     " Matches

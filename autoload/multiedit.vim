@@ -21,6 +21,9 @@ func! multiedit#addRegion()
     if has_key(b:regions, line)
         if s:hasOverlap(sel) == -1
             let b:regions[line] = b:regions[line] + [sel]
+        else
+            let b:first_region = sel
+            call s:rehighlight()
         endif
     else
         let b:regions[line] = [sel]
@@ -61,25 +64,6 @@ func! multiedit#addMark(mode)
 
     " ...then make it a region
     call multiedit#addRegion()
-endfunc
-" }}
-
-" set() {{
-" Set the region under the cursor to be the new first_region
-func! multiedit#set()
-    if !exists("b:regions")
-        return
-    endif
-
-    let sel = {"col": col('v'), "end": col('.'), "line":line('.')}
-
-    for region in b:regions[sel.line]
-        if s:isOverlapping(sel, region)
-            let b:first_region = region
-        endif
-    endfor
-
-    call s:rehighlight()
 endfunc
 " }}
 
