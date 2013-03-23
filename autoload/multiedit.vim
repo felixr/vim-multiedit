@@ -49,7 +49,17 @@ func! multiedit#addMark(mode)
     let mark = g:multiedit_mark_character
 
     " Insert the marker character and select it
-    exe "normal! ".a:mode.g:multiedit_mark_character."v"
+    let line = getline('.')
+    let col = col('.')
+
+    " Insert the markers, pre or post, depending on the mode
+    let precol = a:mode ==# "i" ? 2 : 1
+    let sufcol = a:mode ==# "i" ? 1 : 0
+    call setline(line('.'), line[0:col-precol].mark.line[(col-sufcol):])
+    if a:mode ==# "a"
+        normal! l
+    endif
+    normal! v
 
     let line = line('.')
     if exists("b:regions") && has_key(b:regions, line)
