@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 1.1.3
+" Version: 2.0.0
 " Author: Henrik Lissner <henrik at lissner.net>
 " License: MIT license 
 "
