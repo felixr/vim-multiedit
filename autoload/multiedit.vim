@@ -100,18 +100,16 @@ func! multiedit#start(bang, ...)
 
     " If bang exists, clear the word before you start editing
     if a:bang ==# '!'
-        " Select the word
-        call cursor(b:first_region.line, b:first_region.col)
-        normal! v
-        call cursor(b:first_region.line, lastcol-1)
-
-        " Delete it, add the marker, and move the cursor ahead of it
-        normal! d
+        " Remove the word and update the highlights
+        let linetext = getline(b:first_region.line)
+        call setline(b:first_region.line, linetext[0:b:first_region.col-2].linetext[(b:first_region.col+b:first_region.len)-1:])
         call multiedit#update(0)
-        call cursor(b:first_region.line, b:first_region.col)
 
         " Refresh the lastcol (it's likely moved!)
         let lastcol = b:first_region.col + b:first_region.len
+
+        " Move cursor to the right spot
+        call cursor(b:first_region.line, b:first_region.col)
     else
         " Move cursor to the end of the word
         call cursor(b:first_region.line, lastcol)
