@@ -98,8 +98,9 @@ func! multiedit#start(bang, ...)
 
     let lastcol = b:first_region.col + b:first_region.len
 
-    " If bang exists, clear the word before you start editing
-    if a:bang ==# '!'
+    " If bang exists OR the first region is a marker, then clear it before
+    " editing mode begins.
+    if a:bang ==# '!' || b:first_region.is_marker
         " Remove the word and update the highlights
         let linetext = getline(b:first_region.line)
         call setline(b:first_region.line, linetext[0:b:first_region.col-2].linetext[(b:first_region.col+b:first_region.len)-1:])
