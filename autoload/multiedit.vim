@@ -288,7 +288,7 @@ func! multiedit#again()
     let b:first_region = b:regions_last["first"]
     let b:regions = b:regions_last["regions"]
 
-    call multiedit#update(0)
+    call s:rehighlight()
     return 1
 endfunc
 " }}
