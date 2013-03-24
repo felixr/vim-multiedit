@@ -213,6 +213,10 @@ func! multiedit#update(change_mode)
         return
     endif
 
+    " Column offset from start of main edit region to cursor (relevant when
+    " restoring cursor location post-edit)
+    let cursor_col = col('.')-b:first_region.col
+
     " Clear highlights so we can make changes
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
@@ -275,6 +279,9 @@ func! multiedit#update(change_mode)
 
     " Remeasure the strlen
     let b:first_region.suffix_length = col([b:first_region.line, '$']) - b:first_region.col - b:first_region.len
+    
+    " Restore cursor location
+    call cursor(b:first_region.line, b:first_region.col + cursor_col)
 endfunc
 " }}
 
