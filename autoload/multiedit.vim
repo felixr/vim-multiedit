@@ -25,19 +25,24 @@ func! multiedit#addRegion(is_marker)
 
     if has_key(b:regions, line)
         " Check if this overlaps with any other region
-        if s:hasOverlap(sel) == -1
+        let overlapid = s:hasOverlap(sel)
+        if overlapid == -1
             let b:regions[line] = b:regions[line] + [sel]
         else
             " If so, change this to the 'main' region
-            let b:first_region = sel
-            call s:rehighlight()
+            let b:first_region = b:regions[line][overlapid]
+            let new_first = 1
         endif
     else
         let b:regions[line] = [sel]
     endif
 
     " Highlight the region
-    call s:highlight(line, startcol, endcol)
+    if exists("new_first")
+        call s:rehighlight()
+    else
+        call s:highlight(line, startcol, endcol)
+    endif
 
     " Exit visual mode
     normal! v
