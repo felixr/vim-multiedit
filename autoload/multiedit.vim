@@ -151,11 +151,9 @@ func! multiedit#reset()
     if exists("b:regions")
         let b:regions_last = {}
         let b:regions_last["regions"] = b:regions
+        let b:regions_last["first"] = b:first_region
 
-        if exists("b:first_region")
-            let b:regions_last["first"] = b:first_region
-            unlet b:first_region
-        endif
+        unlet b:first_region
         unlet b:regions
     endif
 
