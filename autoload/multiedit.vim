@@ -127,13 +127,14 @@ func! multiedit#start(bang, ...)
         startinsert
     endif
     
+    " Where the magic happens
     augroup multiedit
         au!
         " Update the highlights as you edit
-        au CursorMovedI * call multiedit#update()
+        au CursorMovedI * call multiedit#update(0)
 
         " Once you leave INSERT, apply changes and delete this augroup
-        au InsertLeave * call multiedit#finish() | au! multiedit
+        au InsertLeave * call multiedit#update(1) | call s:maps(0) | au! multiedit
 
         if g:multiedit_auto_reset == 1
             " Clear all regions once you exit insert mode
@@ -204,91 +205,75 @@ func! multiedit#clear(...)
 endfunc
 " }}
 
-" finish() {{
-" Do changes across all regions
-func! multiedit#finish()
-    " Undo maps
-    call s:maps(0)
-
-    " Save cursor position
-    let b:save_cursor = getpos('.')
-
-    " Prepare the new, altered line
-    let linetext = getline(b:first_region.line)
-    let linelen = len(linetext)
-    let newtext = linetext[(b:first_region.col-1): (linelen-b:first_region.suffix_length-1)]
-
-    " Iterate through the lines where regions exist. And sort them by
-    " sequence.
-    for line in sort(keys(b:regions))
-        let s:offset = 0
-        let regions = sort(b:regions[line], "s:entrySort")
-
-        " Iterate through each region on this line
-        for region in regions
-            let region.col += s:offset 
-            if region.line != b:first_region.line || region.col != b:first_region.col
-                " Get the old line
-                let oldline = getline(region.line)
-
-                " ...and assemble a new one
-                let prefix = ''
-                if region.col > 1
-                    let prefix = oldline[0:region.col-2]
-                endif
-                let suffix = oldline[(region.col+region.len-1):]
-
-                " Update the line
-                call setline(region.line, prefix.newtext.suffix) 
-            endif
-
-            let s:offset = s:offset + len(newtext) - region.len
-            let region.len = len(newtext)
-        endfor
-    endfor
-
-    " Restore cursor position
-    call setpos('.', b:save_cursor)
-
-    " Clean up
-    call multiedit#reset()
-endfunc
-" }}
-
 " update() {{
 " Update highlights when changes are made
-func! multiedit#update()
+func! multiedit#update(change_mode)
     if !exists('b:regions')
         return
     endif
 
-    let line = b:first_region.line
-
+    " Clear highlights so we can make changes
+    syn clear MultieditRegions
+    syn clear MultieditFirstRegion
+    
     " Prepare the new, altered line
-    let linetext = getline(line)
+    let linetext = getline(b:first_region.line)
     let newtext = linetext[(b:first_region.col-1): (len(linetext)-b:first_region.suffix_length-1)]
-    let regions = sort(b:regions[line], "s:entrySort")
-    let s:offset = 0
 
-    " Iterate through each region on this line
-    for region in regions
-        " ...move the highlight offset of regions after it
-        if region.col >= b:first_region.col
-            let region.col += s:offset 
-            let s:offset = s:offset + len(newtext) - b:first_region.len
-        endif
-        
-        " ...and update the length of the first_region
-        if region.col == b:first_region.col
-            let region.len = len(newtext)
-        endif
+    " Iterate through the lines where regions exist. And sort them by
+    " sequence.
+    for line in sort(keys(b:regions))
+        let regions = copy(b:regions[line])
+        let regions = sort(regions, "s:entrySort")
+        let s:offset = 0
+
+        " Iterate through each region on this line
+        for region in regions
+            if a:change_mode
+
+                let region.col += s:offset 
+                if region.line != b:first_region.line || region.col != b:first_region.col
+                    " Get the old line
+                    let oldline = getline(region.line)
+
+                    " ...and assemble a new one
+                    let prefix = ''
+                    if region.col > 1
+                        let prefix = oldline[0:region.col-2]
+                    endif
+                    let suffix = oldline[(region.col+region.len-1):]
+
+                    " Update the line
+                    call setline(region.line, prefix.newtext.suffix) 
+                endif
+
+                let s:offset = s:offset + len(newtext) - region.len
+                let region.len = len(newtext)
+
+            else
+
+                if region.line == b:first_region.line
+                    " ...move the highlight offset of regions after it
+                    if region.col >= b:first_region.col
+                        let region.col += s:offset 
+                        let s:offset = s:offset + len(newtext) - b:first_region.len
+                    endif
+
+                    " ...and update the length of the first_region
+                    if region.col == b:first_region.col
+                        let region.len = len(newtext)
+                    endif
+                endif
+
+                " Rehighlight it
+                call s:highlight(region.line, region.col, region.col+region.len)
+
+            endif
+        endfor
     endfor
 
     " Remeasure the strlen
     let b:first_region.suffix_length = col([b:first_region.line, '$']) - b:first_region.col - b:first_region.len
-
-    " Redo highlights because they've likely moved
-    call s:rehighlight()
 endfunc
 " }}
 
