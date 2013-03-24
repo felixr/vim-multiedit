@@ -60,8 +60,8 @@ if g:multiedit_no_mappings != 1
     nmap <leader>mu :MultieditRestore<CR>
     
     " Matches
-    nmap <leader>mn viw:MultieditAddRegion<CR>/<C-r>=expand("<cword>")<CR><CR>
-    nmap <leader>mp viw:MultieditAddRegion<CR>?<C-r>=expand("<cword>")<CR><CR>
+    nmap <silent> <leader>mn viw:MultieditAddRegion<CR>/<C-r>=expand("<cword>")<CR><CR>
+    nmap <silent> <leader>mp viw:MultieditAddRegion<CR>?<C-r>=expand("<cword>")<CR><CR>
 
     " Edit modes
     nmap <leader>M :Multiedit<CR>
