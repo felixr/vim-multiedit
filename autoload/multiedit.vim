@@ -145,14 +145,18 @@ endfunc
 
 " reset() {{
 func! multiedit#reset()
-    let b:regions_last = {}
-    if exists("b:regions")
-        let b:regions_last["regions"] = b:regions
-        unlet b:regions
+    if exists("b:regions_last")
+        unlet b:regions_last
     endif
-    if exists("b:first_region")
-        let b:regions_last["first"] = b:first_region
-        unlet b:first_region
+    if exists("b:regions")
+        let b:regions_last = {}
+        let b:regions_last["regions"] = b:regions
+
+        if exists("b:first_region")
+            let b:regions_last["first"] = b:first_region
+            unlet b:first_region
+        endif
+        unlet b:regions
     endif
 
     syn clear MultieditRegions
@@ -372,7 +376,7 @@ func! s:rehighlight()
 endfunc
 " }}
 
-" unmap() {{
+" map() {{
 func! s:maps(unmap)
     if a:unmap
         iunmap <buffer><silent> <CR>
