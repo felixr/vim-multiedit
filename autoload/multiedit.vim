@@ -312,15 +312,19 @@ endfunc
 func! multiedit#jump(n)
     let n = str2nr(a:n)
     if !exists("b:regions")
-        echom "There are no regions!"
+        echom "There are no regions to jump to."
         return
     elseif n == 0
+        " n == 0 goes nowhere!
         return
     endif
 
+    " This is the starting point of the search.
     let col = col('.')
     let line = line('.')
 
+    " Sort the lines so that we can sequentially access them. If the jump is
+    " going backwards, reverse the resulting keys.
     let region_keys = sort(keys(b:regions))
     if n < 0
         call reverse(region_keys)
@@ -328,6 +332,8 @@ func! multiedit#jump(n)
 
     let i = 0
     for l in region_keys
+        " Skip over irrelevant lines (before/after the start point, depending
+        " on the jump direction)
         if (n>0 && l<line) || (n<0 && l>line)
             continue
         endif
@@ -338,13 +344,15 @@ func! multiedit#jump(n)
         endif
 
         for region in regions
+            " If this is the line we're on, skip irrelevant regions
+            " (before/after the start point, depending on jump direction)
             if l == line
-                echo l.':'.col.'-'.region.col." (".n.")"
                 if ((n>0) && (region.col<=col)) || ((n<0) && (region.col>=col))
                     continue
                 endif
             endif
 
+            " Skip over n-1 matches, then move the cursor on the nth match
             let i += a:n > 0 ? 1 : -1
             if n == i
                 call cursor(l, region.col)
