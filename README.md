@@ -3,7 +3,7 @@
 ## About
 
 Do you envy Sublime Text 2's multiple selection and editing feature? This plugin
-tries to fill that text cursor shaped gap in your heart by letting you
+tries to fill that multi-caret shaped gap in your heart by letting you
 specify "regions" of text and edit them all from one place.
 
 *(This plugin is based on https://github.com/felixr/vim-multiedit by Felix
@@ -11,17 +11,31 @@ Riedel <felix.riedel at gmail.com>)*
 
 ## Usage
 
-    <leader>mi      Add a disposable region before cursor
-    <leader>ma      Add a disposable region after cursor
-    <leader>mm      Add word (selection in visual mode) under cursor as a region
+    " Insert a disposable marker after the cursor
+    nmap <leader>ma :MultieditAddMark a<CR>
 
-    <leader>mn      Add word under cursor and jump to next occurance
-    <leader>mp      Add word under cursor and jump to previous occurance
+    " Insert a disposable marker before the cursor
+    nmap <leader>mi :MultieditAddMark i<CR>
 
-    <leader>M       Begin editing from end of word
-    <leader>C       Start editing in CHANGE mode, word is deleted first
+    " Make the current selection/word an edit region
+    vmap <leader>m :MultieditAddRegion<CR>  
+    nmap <leader>mm viw:MultieditAddRegion<CR>
 
-    <leader>mr      Reset all regions
-    <leader>md      Delete region under cursor
-    <leader>ms      Change region under cursor to 'main' region
-    <leader>mu      Restore regions from previous use (if applicable)
+    " Restore the regions from a previous edit session
+    nmap <leader>mu :MultieditRestore<CR>
+
+    " Move cursor between regions n times
+    map ]m :MultieditHop 1<CR>
+    map [m :MultieditHop -1<CR>
+
+    " Start editing!
+    nmap <leader>M :Multiedit<CR>
+
+    " Clear the word and start editing
+    nmap <leader>C :Multiedit!<CR>
+
+    " Unset the region under the cursor
+    nmap <silent> <leader>md :MultieditClear<CR>
+
+    " Unset all regions
+    nmap <silent> <leader>mr :MultieditReset<CR>

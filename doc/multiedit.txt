@@ -8,64 +8,127 @@ CONTENTS                                                 *multiedit-contents*
 Introduction        |multiedit-introduction|
 Mappings	    |multiedit-mappings|
 Settings	    |multiedit-settings|
+Known Issues	    |multiedit-issues|
 Changelog           |multiedit-changelog|
 
 ==============================================================================
 INTRODUCTION					    *multiedit-introduction*
 
-Do you envy Sublime Text 2's multiple selection and editing? This plugin tries
-to fill that text cursor shaped gap in your heart.
-
-It works by applying changes to all "regions" you've selected in a way that
-combines Vim's visual block edit mode and ST2's multi-selection feature. Check
-out |multiedit-mappings| to figure out how.
+Do you envy Sublime Text 2's multiple selection and editing feature? This plugin
+tries to fill that multi-caret shaped gap in your heart by letting you
+specify "regions" of text and edit them all from one place.
 
 NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by
 Felix Riedel <felix.riedel at gmail.com>.
 
 ==============================================================================
 MAPPINGS                                            *multiedit-mappings*
+>
+    " Insert a disposable marker after the cursor
+    nmap <leader>ma :MultieditAddMark a<CR>
 
-  Action				  Key map     Command
-  (n)  Add marker before cursor		  <leader>mi  :MultieditPrependMark
-  (n)  Add marker after cursor		  <leader>ma  :MultieditAppendMark
-  (nv) Add word (or visual selection)	  <leader>mm  :MultieditAddRegion
-  (n)  Add word & go to next occurrence   <leader>mn  :MultieditNextMatch
-  (n)  Add word & go to prev occurrence   <leader>mp  :MultieditPreviousMatch
-  (n)  Begin editing			  <leader>M   :Multiedit
-  (n)  Begin editing in change mode	  <leader>C   :Multiedit!
-  (n)  Clear all regions		  <leader>mr  :MultieditReset
-  (n)  Clear region under cursor	  <leader>md  :MultieditClear
-  (n)  Set region under cursor as primary <leader>ms  :MultieditSet
-  (n)  Restore previous regions		  <leader>mu  :MultieditRestore
-  
+    " Insert a disposable marker before the cursor
+    nmap <leader>mi :MultieditAddMark i<CR>
+
+    " Make the current selection/word an edit region
+    vmap <leader>m :MultieditAddRegion<CR>  
+    nmap <leader>mm viw:MultieditAddRegion<CR>
+
+    " Restore the regions from a previous edit session
+    nmap <leader>mu :MultieditRestore<CR>
+
+    " Move cursor between regions n times
+    map ]m :MultieditHop 1<CR>
+    map [m :MultieditHop -1<CR>
+
+    " Start editing!
+    nmap <leader>M :Multiedit<CR>
+
+    " Clear the word and start editing
+    nmap <leader>C :Multiedit!<CR>
+
+    " Unset the region under the cursor
+    nmap <silent> <leader>md :MultieditClear<CR>
+
+    " Unset all regions
+    nmap <silent> <leader>mr :MultieditReset<CR>
+<
+Here are some keybinds that aren't included in the plugin but may be
+useful/interesting to some people:
+>
+    " Make the word under the cursor a region and jump to the next/previous
+    " occurance of that word
+    nmap <silent> <leader>mn <leader>mm/<C-r>=expand("<cword>")<CR><CR>
+    nmap <silent> <leader>mp <leader>mm?<C-r>=expand("<cword>")<CR><CR>
+<
+ 
 ==============================================================================
 SETTINGS                                            *multiedit-settings*
-
 >
-    " Disable all mappings? Default: no
+    " Disable all mappings?
     let g:multiedit_no_mappings = 0
 
-    " Reset all regions on InsertLeave when finished? Default: Yes
+    " Reset all regions on InsertLeave when finished?
     let g:multiedit_auto_reset = 1
 
     " Disposable marker character (beware characters with strlen > 1 - like
-    " special symbols
+    " special symbols).
     let g:multiedit_mark_character = '|'
 
     " If no selections are present and you initiate edit mode, should it
-    " restore the previous regions? Default: Yes
+    " restore the previous regions?
     let g:multiedit_auto_restore = 1
 <
 
-The highlight regions can be customized:
+The highlight regions can be customized, these are the defaults:
 >
-    hi default MultieditRegions gui=reverse term=reverse cterm=reverse
+    hi default link MultieditRegions Search
     hi default link MultieditFirstRegion IncSearch
 <
 
 ==============================================================================
+KNOWN ISSUES                                        *multiedit-issues*
+
+A few problems exist in this plugin, some that may be addressed in the future
+and some that won't.
+
+1. Multiediting aren't truly like multiple cursors, they can't account for
+   newlines or deleting past the starting point of the main region. (This
+   won't be addressed. Macros can easily make up for this. Heck, with mastery
+   of macros, this entire plugin could be replaced!)
+2. g:multiedit_mark_character cannot be a unicode/special character with
+   a strlen > 1. This may be addressed in a future updated, but is low
+   priority.
+3. It won't make you coffee. This is unacceptable! A THOUSAND YEARS DUNGEON!
+
+If you encounter any other issues, please report them at 
+https://github.com/hlissner/vim-multiedit/issues
+
+Thank you!
+
+==============================================================================
 CHANGELOG					    *multiedit-changelog*
+
+2013-03-25 [2.0.0]
+- New: Jump between regions with ]m and [m
+- Changed: disposable marker will be automatically deleted when entering
+  insert mode
+- Changed: :MultieditAppendMark and :MultieditPrependMark are merged into
+  :MultieditAddMark [ia]
+- Changed: The default highlight color for MultieditRegion is now linked to
+   Search' hl group.
+- Removed: <leader>ms (sets the region under the cursor to the new
+  'main' region). <leader>mm and <leader>m will do so implicitly if
+  a pre-existing region is detected under the cursor
+- Removed: <leader>mn and <leader>mp - however, but for instructions on how to
+  reproduce functionality see |multiedit-settings|.
+- Fixed: Cursor position post-edit was off (usually very far off)
+- Fixed: old regions weren't saved and couldn't be restored (would throw an
+  error)
+- Fixed: when deleting the main region, the (automatically) assigned new main
+  region wasn't chosen based on the order in which they were set
+- Fixed: errors caused by overlap detection when deleting regions
+- General code clean up and refactoring across the board
 
 2013-03-11 [1.1.3]
 - Add :MultieditRestore to restore previous regions (if available). Uses

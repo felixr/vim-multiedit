@@ -40,41 +40,32 @@ hi default link MultieditFirstRegion IncSearch
 " Mappings
 com! -bar -range MultieditAddRegion call multiedit#addRegion(0)
 com! -bar -nargs=1 MultieditAddMark call multiedit#addMark(<q-args>)
-" Start edit mode!
 com! -bar -bang Multiedit call multiedit#start(<q-bang>)
-" Clear region/marker under the cursor
 com! -bar MultieditClear call multiedit#clear()
-" Clear all regions and markers
 com! -bar MultieditReset call multiedit#reset()
-" Load previous regions, if available
 com! -bar MultieditRestore call multiedit#again()
-" Jumping between regions
 com! -bar -nargs=1 MultieditHop call multiedit#jump(<q-args>)
 
 if g:multiedit_no_mappings != 1
-    " Markers
+    " Insert a disposable marker after the cursor
     nmap <leader>ma :MultieditAddMark a<CR>
+    " Insert a disposable marker before the cursor
     nmap <leader>mi :MultieditAddMark i<CR>
-
-    " Regions
+    " Make the current selection/word an edit region
     vmap <leader>m :MultieditAddRegion<CR>  
     nmap <leader>mm viw:MultieditAddRegion<CR>
+    " Restore the regions from a previous edit session
     nmap <leader>mu :MultieditRestore<CR>
-    
-    " Matches
-    nmap <silent> <leader>mn viw:MultieditAddRegion<CR>/<C-r>=expand("<cword>")<CR><CR>
-    nmap <silent> <leader>mp viw:MultieditAddRegion<CR>?<C-r>=expand("<cword>")<CR><CR>
-
-    " Navigation
+    " Move cursor between regions n times
     map ]m :MultieditHop 1<CR>
     map [m :MultieditHop -1<CR>
-
-    " Edit modes
+    " Start editing!
     nmap <leader>M :Multiedit<CR>
+    " Clear the word and start editing
     nmap <leader>C :Multiedit!<CR>
-
-    " Resetting
+    " Unset the region under the cursor
     nmap <silent> <leader>md :MultieditClear<CR>
+    " Unset all regions
     nmap <silent> <leader>mr :MultieditReset<CR>
 endif 
 
