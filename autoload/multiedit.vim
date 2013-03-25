@@ -61,7 +61,10 @@ func! multiedit#addMark(mode)
     " Insert the markers, pre or post, depending on the mode
     let precol = a:mode ==# "i" ? 2 : 1
     let sufcol = a:mode ==# "i" ? 1 : 0
-    call setline(line('.'), line[0:col-precol].mark.line[(col-sufcol):])
+
+    let prefix = col != 1 ? line[0:col-precol] : ''
+    let suffix = line[(col-sufcol):]
+    call setline(line('.'), prefix.mark.suffix)
     if a:mode ==# "a"
         normal! l
     endif
