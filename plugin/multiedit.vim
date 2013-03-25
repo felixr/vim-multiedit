@@ -57,7 +57,7 @@ if g:multiedit_no_mappings != 1
     nmap <leader>mi :MultieditAddMark i<CR>
 
     " Regions
-    vmap <leader>mm :MultieditAddRegion<CR>  
+    vmap <leader>m :MultieditAddRegion<CR>  
     nmap <leader>mm viw:MultieditAddRegion<CR>
     nmap <leader>mu :MultieditRestore<CR>
     
