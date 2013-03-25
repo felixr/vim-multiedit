@@ -190,8 +190,12 @@ func! multiedit#clear(...)
         " Does this cursor overlap with this region? If so, delete it.
         if s:isOverlapping(sel, region)
 
+            " If you're deleting a main region, we need to pass on the role to
+            " another region first!
             if region == b:first_region
                 unlet b:first_region
+
+                " Get the last specified region
                 let keys = keys(b:regions)
                 if len(keys)
                     let b:first_region = b:regions[keys(b:regions)[-1]][-1]
