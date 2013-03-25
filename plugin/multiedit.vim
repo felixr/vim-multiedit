@@ -38,7 +38,7 @@ hi default link MultieditFirstRegion IncSearch
 
 
 " Mappings
-com! -bar -range MultieditAddRegion call multiedit#addRegion(0)
+com! -bar -range MultieditAddRegion call multiedit#addRegion()
 com! -bar -nargs=1 MultieditAddMark call multiedit#addMark(<q-args>)
 com! -bar -bang Multiedit call multiedit#start(<q-bang>)
 com! -bar MultieditClear call multiedit#clear()

@@ -1,7 +1,7 @@
 " *multiedit.txt* Multi-editing for Vim   
 
 " addRegion() {{
-func! multiedit#addRegion(is_marker)
+func! multiedit#addRegion()
     if mode() != 'v'
         normal! gv
     endif
@@ -16,8 +16,7 @@ func! multiedit#addRegion(is_marker)
         \ 'line': line, 
         \ 'col': startcol,
         \ 'len': endcol-startcol,
-        \ 'suffix_length': col('$')-endcol,
-        \ 'is_marker': a:is_marker
+        \ 'suffix_length': col('$')-endcol
     \ }
     if !exists("b:regions")
         let b:regions = {}
@@ -62,7 +61,7 @@ func! multiedit#addMark(mode)
     let precol = a:mode ==# "i" ? 2 : 1
     let sufcol = a:mode ==# "i" ? 1 : 0
 
-    let prefix = col != 1 ? line[0:col-precol] : ''
+    let prefix = col > 1 ? line[0:col-precol] : ''
     let suffix = line[(col-sufcol):]
     call setline(line('.'), prefix.mark.suffix)
     if a:mode ==# "a"
@@ -88,7 +87,7 @@ func! multiedit#addMark(mode)
     endif
 
     " ...then make it a region
-    call multiedit#addRegion(1)
+    call multiedit#addRegion()
 endfunc
 " }}
 
@@ -104,21 +103,24 @@ func! multiedit#start(bang, ...)
 
     " If bang exists OR the first region is a marker, then clear it before
     " editing mode begins.
-    if a:bang ==# '!' || b:first_region.is_marker
+    if a:bang ==# '!'
         " Remove the word and update the highlights
         let linetext = getline(b:first_region.line)
-        call setline(b:first_region.line, linetext[0:b:first_region.col-2].linetext[(b:first_region.col+b:first_region.len)-1:])
+        if b:first_region.col == 1
+            let newline = g:multiedit_mark_character . linetext[(lastcol - 1):]
+        else
+            let newline = linetext[0:(b:first_region.col - 2)] . g:multiedit_mark_character . linetext[(lastcol - 1):]
+        endif
+
+        call setline(b:first_region.line, newline)
         call multiedit#update(0)
 
-        " Refresh the lastcol (it's likely moved!)
+        " Refresh the lastcol (update() likely changed things!)
         let lastcol = b:first_region.col + b:first_region.len
-
-        " Move cursor to the right spot
-        call cursor(b:first_region.line, b:first_region.col)
-    else
-        " Move cursor to the end of the word
-        call cursor(b:first_region.line, lastcol)
     endif
+
+    " Move cursor to the end of the word
+    call cursor(b:first_region.line, lastcol)
 
     " Set up some 'abort' mappings, because they can't be accounted for. They
     " will unmap themselves once they're pressed.
@@ -412,6 +414,9 @@ endfunc
 
 " highlight(line, start, end) {{
 func! s:highlight(line, start, end)
+    if a:start > a:end || a:end < a:start
+        return
+    endif
     if !exists("b:first_region") || (b:first_region.line == a:line && b:first_region.col == a:start)
         let synid = "MultieditFirstRegion"
     else
