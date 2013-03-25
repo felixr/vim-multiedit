@@ -12,7 +12,8 @@ func! multiedit#addRegion(is_marker)
     let endcol = col('.')+1
 
     " add selection to list
-    let sel = { 'line': line, 
+    let sel = { 
+        \ 'line': line, 
         \ 'col': startcol,
         \ 'len': endcol-startcol,
         \ 'suffix_length': col('$')-endcol,
@@ -176,7 +177,7 @@ func! multiedit#clear(...)
     if a:0 == 1 && type(a:1) == 4
         let sel = a:1
     else
-        let sel = {"col": col('v'), "end": col('.'), "line":line('.')}
+        let sel = {"col": col('v'), "len": 1, "line":line('.')}
     endif
 
     if !has_key(b:regions, sel.line)
@@ -316,8 +317,8 @@ func! s:isOverlapping(selA, selB)
     endif
 
     " Check for overlapping
-    let selAend = a:selA.col + a:selA.len
-    let selBend = a:selB.col + a:selB.len
+    let selAend = a:selA.col + (a:selA.len - 1)
+    let selBend = a:selB.col + (a:selB.len - 1)
     return a:selA.col == a:selB.col || selAend == selBend 
                 \ || a:selA.col == selBend || selAend == a:selB.col
                 \ || (a:selA.col > a:selB.col && a:selA.col < selBend)
