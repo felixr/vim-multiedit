@@ -1,9 +1,9 @@
-*multiedit.txt*	 Multi-editing for Vim   
+*multiedit.txt*	 Multi-editing for Vim			*multiedit*
 
 Author: Henrik Lissner <henrik at lissner.net>
 License: MIT license
 
-CONTENTS                                                 *multiedit-contents*
+CONTENTS						*multiedit-contents*
 
 Introduction        |multiedit-introduction|
 Mappings	    |multiedit-mappings|
@@ -12,7 +12,7 @@ Known Issues	    |multiedit-issues|
 Changelog           |multiedit-changelog|
 
 ==============================================================================
-INTRODUCTION					    *multiedit-introduction*
+INTRODUCTION						*multiedit-introduction*
 
 Do you envy Sublime Text 2's multiple selection and editing feature? This plugin
 tries to fill that multi-caret shaped gap in your heart by letting you
@@ -22,7 +22,7 @@ NOTE: This plugin was inspired by https://github.com/felixr/vim-multiedit, by
 Felix Riedel <felix.riedel at gmail.com>.
 
 ==============================================================================
-MAPPINGS                                            *multiedit-mappings*
+MAPPINGS						*multiedit-mappings*
 >
     " Insert a disposable marker after the cursor
     nmap <leader>ma :MultieditAddMark a<CR>
@@ -63,7 +63,7 @@ useful/interesting to some people:
 <
  
 ==============================================================================
-SETTINGS                                            *multiedit-settings*
+SETTINGS						*multiedit-settings*
 >
     " Disable all mappings?
     let g:multiedit_no_mappings = 0
@@ -87,7 +87,7 @@ The highlight regions can be customized, these are the defaults:
 <
 
 ==============================================================================
-KNOWN ISSUES                                        *multiedit-issues*
+KNOWN ISSUES						*multiedit-issues*
 
 A few problems exist in this plugin, some that may be addressed in the future
 and some that won't.
@@ -107,7 +107,7 @@ https://github.com/hlissner/vim-multiedit/issues
 Thank you!
 
 ==============================================================================
-CHANGELOG					    *multiedit-changelog*
+CHANGELOG						*multiedit-changelog*
 
 2013-03-25 [2.0.0]
 - New: Jump between regions with ]m and [m
@@ -120,9 +120,9 @@ CHANGELOG					    *multiedit-changelog*
 - Removed: <leader>ms (sets the region under the cursor to the new
   'main' region). <leader>mm and <leader>m will do so implicitly if
   a pre-existing region is detected under the cursor
-- Removed: <leader>mn and <leader>mp - however, but for instructions on how to
-  reproduce functionality see |multiedit-settings|.
-- Fixed: Cursor position post-edit was off (usually very far off)
+- Removed: <leader>mn and <leader>mp - however, instructions on how to
+  reproduce functionality can be found in |multiedit-settings|.
+- Fixed: cursor position after editing
 - Fixed: old regions weren't saved and couldn't be restored (would throw an
   error)
 - Fixed: when deleting the main region, the (automatically) assigned new main
