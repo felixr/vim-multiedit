@@ -110,18 +110,20 @@ Thank you!
 CHANGELOG						*multiedit-changelog*
 
 2013-03-25 [2.0.0]
-- New: Jump between regions with ]m and [m
+- New: jump between regions with ]m and [m
 - Changed: disposable marker will be automatically deleted when entering
   insert mode
 - Changed: :MultieditAppendMark and :MultieditPrependMark are merged into
   :MultieditAddMark [ia]
-- Changed: The default highlight color for MultieditRegion is now linked to
-   Search' hl group.
+- Changed: the default highlight color for MultieditRegion is now linked to
+   Search' hl group
+- Changed: in visual mode, <leader>mm is not <leader>m (it is still <leader>mm
+  in normal mode)
 - Removed: <leader>ms (sets the region under the cursor to the new
   'main' region). <leader>mm and <leader>m will do so implicitly if
   a pre-existing region is detected under the cursor
 - Removed: <leader>mn and <leader>mp - however, instructions on how to
-  reproduce functionality can be found in |multiedit-settings|.
+  restore this functionality can be found in |multiedit-settings|
 - Fixed: cursor position after editing
 - Fixed: old regions weren't saved and couldn't be restored (would throw an
   error)
