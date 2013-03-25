@@ -33,7 +33,7 @@ endif
 
 
 " Color highlights
-hi default MultieditRegions gui=reverse term=reverse cterm=reverse
+hi default link MultieditRegions Search
 hi default link MultieditFirstRegion IncSearch
 
 
