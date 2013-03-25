@@ -307,7 +307,58 @@ func! multiedit#again()
 endfunc
 " }}
 
-""""""""""""""""""""""""""(
+" jump() {{
+" Hop [-/+]N regions
+func! multiedit#jump(n)
+    let n = str2nr(a:n)
+    if !exists("b:regions")
+        echom "There are no regions!"
+        return
+    elseif n == 0
+        return
+    endif
+
+    let col = col('.')
+    let line = line('.')
+
+    let region_keys = sort(keys(b:regions))
+    if n < 0
+        call reverse(region_keys)
+    endif
+
+    let i = 0
+    for l in region_keys
+        if (n>0 && l<line) || (n<0 && l>line)
+            continue
+        endif
+
+        let regions = sort(copy(b:regions[l]), 's:entrySort')
+        if n < 0
+            call reverse(regions)
+        endif
+
+        for region in regions
+            if l == line
+                echo l.':'.col.'-'.region.col." (".n.")"
+                if ((n>0) && (region.col<=col)) || ((n<0) && (region.col>=col))
+                    continue
+                endif
+            endif
+
+            let i += a:n > 0 ? 1 : -1
+            if n == i
+                call cursor(l, region.col)
+                return 1
+            endif
+        endfor
+    endfor
+
+    echom "No more regions!"
+    return
+endfunc
+" }}
+
+""""""""""""""""""""""""""
 " isOverlapping(selA, selB) {{
 " Checks to see if selA overlaps with selB
 func! s:isOverlapping(selA, selB)

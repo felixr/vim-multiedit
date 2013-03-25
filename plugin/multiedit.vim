@@ -43,11 +43,13 @@ com! -bar -nargs=1 MultieditAddMark call multiedit#addMark(<q-args>)
 " Start edit mode!
 com! -bar -bang Multiedit call multiedit#start(<q-bang>)
 " Clear region/marker under the cursor
-com! -bar -range MultieditClear call multiedit#clear()
+com! -bar MultieditClear call multiedit#clear()
 " Clear all regions and markers
 com! -bar MultieditReset call multiedit#reset()
 " Load previous regions, if available
 com! -bar MultieditRestore call multiedit#again()
+" Jumping between regions
+com! -bar -nargs=1 MultieditHop call multiedit#jump(<q-args>)
 
 if g:multiedit_no_mappings != 1
     " Markers
@@ -62,6 +64,10 @@ if g:multiedit_no_mappings != 1
     " Matches
     nmap <silent> <leader>mn viw:MultieditAddRegion<CR>/<C-r>=expand("<cword>")<CR><CR>
     nmap <silent> <leader>mp viw:MultieditAddRegion<CR>?<C-r>=expand("<cword>")<CR><CR>
+
+    " Navigation
+    map ]m :MultieditHop 1<CR>
+    map [m :MultieditHop -1<CR>
 
     " Edit modes
     nmap <leader>M :Multiedit<CR>
