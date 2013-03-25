@@ -192,8 +192,9 @@ func! multiedit#clear(...)
 
             if region == b:first_region
                 unlet b:first_region
-                if len(b:regions[sel.line]) > 1
-                    let b:first_region = b:regions[sel.line][-1]
+                let keys = keys(b:regions)
+                if len(keys)
+                    let b:first_region = b:regions[keys(b:regions)[-1]][-1]
                 endif
             endif
 
