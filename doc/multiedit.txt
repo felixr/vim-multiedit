@@ -30,6 +30,14 @@ MAPPINGS						*multiedit-mappings*
     " Insert a disposable marker before the cursor
     nmap <leader>mi :MultieditAddMark i<CR>
 
+    " Make a new line and insert a marker
+    nmap <leader>mo o<Esc>:MultieditAddMark i<CR>
+    nmap <leader>mO O<Esc>:MultieditAddMark i<CR>
+
+    " Insert a marker at the end/start of a line
+    nmap <leader>mA $:MultieditAddMark a<CR>
+    nmap <leader>mI ^:MultieditAddMark i<CR>
+
     " Make the current selection/word an edit region
     vmap <leader>m :MultieditAddRegion<CR>  
     nmap <leader>mm viw:MultieditAddRegion<CR>
@@ -108,6 +116,12 @@ Thank you!
 
 ==============================================================================
 CHANGELOG						*multiedit-changelog*
+
+2013-03-26 [2.0.1]
+- New: four new keybinds for adding markers to the start/end of a line or on
+  the next/previous line
+- Changed: auto-removing disposable markers where entering insert mode (had
+  a strange effect when regions were at the start of a line)
 
 2013-03-25 [2.0.0]
 - New: jump between regions with ]m and [m
