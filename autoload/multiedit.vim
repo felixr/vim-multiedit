@@ -229,7 +229,8 @@ func! multiedit#update(change_mode)
 
     " Column offset from start of main edit region to cursor (relevant when
     " restoring cursor location post-edit)
-    let cursor_col = col('.')-b:first_region.col
+    let col = col('.')
+    let cursor_col = col-b:first_region.col
 
     " Clear highlights so we can make changes
     syn clear MultieditRegions
@@ -237,7 +238,13 @@ func! multiedit#update(change_mode)
     
     " Prepare the new, altered line
     let linetext = getline(b:first_region.line)
-    let newtext = linetext[(b:first_region.col-1): (len(linetext)-b:first_region.suffix_length-1)]
+    let lineendlen = (len(linetext) - b:first_region.suffix_length)
+    echom lineendlen-b:first_region.col
+    if lineendlen == 0
+        let newtext = ""
+    else
+        let newtext = linetext[(b:first_region.col-1): (lineendlen-1)]
+    endif
 
     " Iterate through the lines where regions exist. And sort them by
     " sequence.
@@ -266,25 +273,42 @@ func! multiedit#update(change_mode)
                     call setline(region.line, prefix.newtext.suffix) 
                 endif
 
-                let s:offset = s:offset + len(newtext) - region.len
+                if col >= b:first_region.col
+                    let s:offset = s:offset + len(newtext) - region.len
+                endif
                 let region.len = len(newtext)
 
             else
 
                 if region.line == b:first_region.line
+
                     " ...move the highlight offset of regions after it
                     if region.col >= b:first_region.col
                         let region.col += s:offset 
                         let s:offset = s:offset + len(newtext) - b:first_region.len
                     endif
 
-                    " ...and update the length of the first_region
+                    " ...and update the length of the first_region.
+                    " Remember, we're only affecting the main region and
+                    " regions following it, on the same line
                     if region.col == b:first_region.col
-                        let region.len = len(newtext)
+                        if newtext ==# ""
+                            if col < b:first_region.col
+                                call multiedit#reset(1)
+                                return
+                            endif
+
+                            " If newtext is blank, just make the len 0 (for
+                            " now) otherwise it'll go crazy!
+                            let region.len = 0
+                        else
+                            let region.len = len(newtext)
+                        endif
                     endif
+
                 endif
 
-                " Rehighlight it
+                " Rehighlight the lines
                 call s:highlight(region.line, region.col, region.col+region.len)
 
             endif
@@ -296,6 +320,7 @@ func! multiedit#update(change_mode)
     
     " Restore cursor location
     call cursor(b:first_region.line, b:first_region.col + cursor_col)
+
 endfunc
 " }}
 
@@ -446,9 +471,9 @@ endfunc
 " map() {{
 func! s:maps(unmap)
     if a:unmap
-        iunmap <buffer><silent> <CR>
-        iunmap <buffer><silent> <Up>
-        iunmap <buffer><silent> <Down>
+        silent! iunmap <buffer><silent> <CR>
+        silent! iunmap <buffer><silent> <Up>
+        silent! iunmap <buffer><silent> <Down>
     else
         inoremap <buffer><silent> <CR> <Esc><CR>:call s:maps(1)<CR>
         inoremap <buffer><silent> <Up> <Esc><Up>:call s:maps(1)<CR>
