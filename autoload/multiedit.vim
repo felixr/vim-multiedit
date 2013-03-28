@@ -152,14 +152,16 @@ endfunc
 " }}
 
 " reset() {{
-func! multiedit#reset()
+func! multiedit#reset(...)
     if exists("b:regions_last")
         unlet b:regions_last
     endif
     if exists("b:regions")
-        let b:regions_last = {}
-        let b:regions_last["regions"] = b:regions
-        let b:regions_last["first"] = b:first_region
+        if a:0 == 0
+            let b:regions_last = {}
+            let b:regions_last["regions"] = b:regions
+            let b:regions_last["first"] = b:first_region
+        endif
 
         unlet b:first_region
         unlet b:regions
@@ -168,6 +170,7 @@ func! multiedit#reset()
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
 
+    call s:maps(1)
     silent! au! multiedit
 endfunc
 " }}
