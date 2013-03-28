@@ -117,6 +117,12 @@ Thank you!
 ==============================================================================
 CHANGELOG						*multiedit-changelog*
 
+2013-03-28 [2.0.2]
+- Fix: when the region goes crazy when the text is at the start of the line (when
+  len == 0 it would suddenly expand to the length of the line).
+- Fix: when the cursor deletes past its boundaries it will leave multiedit
+  mode and reset your regions.
+
 2013-03-26 [2.0.1]
 - New: four new keybinds for adding markers to the start/end of a line or on
   the next/previous line
