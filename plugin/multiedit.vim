@@ -1,6 +1,6 @@
 " *multiedit.txt* Multi-editing for Vim   
 " 
-" Version: 0.1.0
+" Version: 0.2.0
 " Author : Felix Riedel <felix.riedel at gmail.com> 
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,13 +24,19 @@
 
 hi default MultiSelections gui=reverse term=reverse cterm=reverse
 
-map <Plug>(multiedit-add) :<C-U>call multiedit#addSelection()<CR>
-map <Plug>(multiedit-edit) :<C-U>call multiedit#startEdit()<CR>
-map <Plug>(multiedit-reset) :<C-U>call multiedit#reset()<CR>
+map <silent> <Plug>(multiedit-add) :<C-U>call multiedit#addSelection()<CR>
+map <silent> <Plug>(multiedit-edit) :<C-U>call multiedit#startEdit()<CR>
+map <silent> <Plug>(multiedit-reset) :<C-U>call multiedit#reset()<CR>
 
 if !exists('g:multiedit_nomappings') || g:multiedit_nomappings == 0
-    map ,a <Plug>(multiedit-add)
-    map ,a viw<Plug>(multiedit-add)b
+    " add currently selected region to multiedit
+    map ,a <Plug>(multiedit-add) 
+    " add a space and mark it as multiedit region
+    map ,s I<Space><Esc>v<Plug>(multiedit-add)
+    " mark word as multiedit region 
+    map ,w viw<Plug>(multiedit-add)b
+    " start editing multiedit regions 
     map ,i <Plug>(multiedit-edit)i
+    " reset/clear multiedit regions
     map ,q <Plug>(multiedit-reset)
 endif 
