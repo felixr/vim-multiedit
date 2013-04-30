@@ -239,7 +239,6 @@ func! multiedit#update(change_mode)
     " Prepare the new, altered line
     let linetext = getline(b:first_region.line)
     let lineendlen = (len(linetext) - b:first_region.suffix_length)
-    echom lineendlen-b:first_region.col
     if lineendlen == 0
         let newtext = ""
     else
