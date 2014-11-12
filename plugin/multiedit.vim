@@ -1,8 +1,8 @@
-" *multiedit.txt* Multi-editing for Vim   
-" 
+" *multiedit.txt* Multi-editing for Vim
+"
 " Version: 2.0.2
 " Author: Henrik Lissner <henrik at lissner.net>
-" License: MIT license 
+" License: MIT license
 "
 " Inspired by https://github.com/felixr/vim-multiedit, this plugin hopes to
 " fill that multi-cursor-shaped gap in your heart that Sublime Text 2 left you
@@ -58,7 +58,7 @@ if g:multiedit_no_mappings != 1
     nmap <leader>mA $:MultieditAddMark a<CR>
     nmap <leader>mI ^:MultieditAddMark i<CR>
     " Make the current selection/word an edit region
-    vmap <leader>m :MultieditAddRegion<CR>  
+    vmap <leader>m :MultieditAddRegion<CR>
     nmap <leader>mm viw:MultieditAddRegion<CR>
     " Restore the regions from a previous edit session
     nmap <leader>mu :MultieditRestore<CR>
@@ -73,6 +73,6 @@ if g:multiedit_no_mappings != 1
     nmap <silent> <leader>md :MultieditClear<CR>
     " Unset all regions
     nmap <silent> <leader>mr :MultieditReset<CR>
-endif 
+endif
 
 " vim: set foldmarker={{,}} foldlevel=0 foldmethod=marker
