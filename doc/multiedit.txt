@@ -93,6 +93,20 @@ The highlight regions can be customized, these are the defaults:
     hi default link MultieditRegions Search
     hi default link MultieditFirstRegion IncSearch
 <
+If other plugins cause odd behaviour during multiple region editing, two
+function scan be used to disable/re-enable this behaviour at apprpriate
+times. An example showing how to disable NeoComplete during multiple
+region editing is below:
+
+    function! Multiple_cursors_before()
+      exe 'NeoCompleteLock'
+      echo 'Disabled autocomplete'
+    endfunction
+
+    function! Multiple_cursors_after()
+      exe 'NeoCompleteUnlock'
+      echo 'Enabled autocomplete'
+    endfunction
 
 ==============================================================================
 KNOWN ISSUES						*multiedit-issues*
@@ -117,6 +131,11 @@ Thank you!
 ==============================================================================
 CHANGELOG						*multiedit-changelog*
 
+2014-11-13 [2.0.3]
+- New: added conditional calls to Multiple_cursors_after/Multiple_cursors_before 
+  functions defined in your ~/.vimrc. These functions allow disabling of 
+  NeoComplete while editing multiple regions, for example. Implemenation copied
+  from terryma/vim-multiple-cursors issue #51
 2013-03-28 [2.0.2]
 - Fix: when the region goes crazy when the text is at the start of the line (when
   len == 0 it would suddenly expand to the length of the line).

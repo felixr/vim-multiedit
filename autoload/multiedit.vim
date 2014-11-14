@@ -1,4 +1,18 @@
-" *multiedit.txt* Multi-editing for Vim   
+" *multiedit.txt* Multi-editing for Vim
+
+" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
+func! multiedit#triggerEndEvents()
+    if exists('*Multiple_cursors_after')
+        exe "call Multiple_cursors_after()"
+    endif
+endfunc
+
+" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
+func! multiedit#triggerStartEvents()
+    if exists('*Multiple_cursors_before')
+        exe "call Multiple_cursors_before()"
+    endif
+endfunc
 
 " addRegion() {{
 func! multiedit#addRegion()
@@ -12,8 +26,8 @@ func! multiedit#addRegion()
     let endcol = col('.')+1
 
     " add selection to list
-    let sel = { 
-        \ 'line': line, 
+    let sel = {
+        \ 'line': line,
         \ 'col': startcol,
         \ 'len': endcol-startcol,
         \ 'suffix_length': col('$')-endcol
@@ -93,11 +107,13 @@ endfunc
 
 " start() {{
 func! multiedit#start(bang, ...)
-    if !exists("b:regions") 
+    if !exists("b:regions")
         if g:multiedit_auto_restore == 0 || !multiedit#again()
             return
         endif
     endif
+
+    call multiedit#triggerStartEvents()
 
     let lastcol = b:first_region.col + b:first_region.len
 
@@ -133,7 +149,7 @@ func! multiedit#start(bang, ...)
     else
         startinsert
     endif
-    
+
     " Where the magic happens
     augroup multiedit
         au!
@@ -141,7 +157,7 @@ func! multiedit#start(bang, ...)
         au CursorMovedI * call multiedit#update(0)
 
         " Once you leave INSERT, apply changes and delete this augroup
-        au InsertLeave * call multiedit#update(1) | call s:maps(0) | au! multiedit
+        au InsertLeave * call multiedit#update(1) | call s:maps(0) | multiedit#triggerEndEvents() | au! multiedit
 
         if g:multiedit_auto_reset == 1
             " Clear all regions once you exit insert mode
@@ -180,7 +196,7 @@ func! multiedit#clear(...)
     if !exists("b:regions")
         return
     endif
-    
+
     " The region to delete might have been provided as an argument.
     if a:0 == 1 && type(a:1) == 4
         let sel = a:1
@@ -235,7 +251,7 @@ func! multiedit#update(change_mode)
     " Clear highlights so we can make changes
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
-    
+
     " Prepare the new, altered line
     let linetext = getline(b:first_region.line)
     let lineendlen = (len(linetext) - b:first_region.suffix_length)
@@ -256,7 +272,7 @@ func! multiedit#update(change_mode)
         for region in regions
             if a:change_mode
 
-                let region.col += s:offset 
+                let region.col += s:offset
                 if region.line != b:first_region.line || region.col != b:first_region.col
                     " Get the old line
                     let oldline = getline(region.line)
@@ -269,7 +285,7 @@ func! multiedit#update(change_mode)
                     let suffix = oldline[(region.col+region.len-1):]
 
                     " Update the line
-                    call setline(region.line, prefix.newtext.suffix) 
+                    call setline(region.line, prefix.newtext.suffix)
                 endif
 
                 if col >= b:first_region.col
@@ -283,7 +299,7 @@ func! multiedit#update(change_mode)
 
                     " ...move the highlight offset of regions after it
                     if region.col >= b:first_region.col
-                        let region.col += s:offset 
+                        let region.col += s:offset
                         let s:offset = s:offset + len(newtext) - b:first_region.len
                     endif
 
@@ -316,7 +332,7 @@ func! multiedit#update(change_mode)
 
     " Remeasure the strlen
     let b:first_region.suffix_length = col([b:first_region.line, '$']) - b:first_region.col - b:first_region.len
-    
+
     " Restore cursor location
     call cursor(b:first_region.line, b:first_region.col + cursor_col)
 
@@ -415,7 +431,7 @@ func! s:isOverlapping(selA, selB)
     " Check for overlapping
     let selAend = a:selA.col + (a:selA.len - 1)
     let selBend = a:selB.col + (a:selB.len - 1)
-    return a:selA.col == a:selB.col || selAend == selBend 
+    return a:selA.col == a:selB.col || selAend == selBend
                 \ || a:selA.col == selBend || selAend == a:selB.col
                 \ || (a:selA.col > a:selB.col && a:selA.col < selBend)
                 \ || (selAend < selBend && selAend > a:selB.col)
