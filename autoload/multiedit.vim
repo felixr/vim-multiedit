@@ -1,19 +1,5 @@
 " *multiedit.txt* Multi-editing for Vim
 
-" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
-func! multiedit#triggerEndEvents()
-    if exists('*Multiple_cursors_after')
-        exe "call Multiple_cursors_after()"
-    endif
-endfunc
-
-" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
-func! multiedit#triggerStartEvents()
-    if exists('*Multiple_cursors_before')
-        exe "call Multiple_cursors_before()"
-    endif
-endfunc
-
 " addRegion() {{
 func! multiedit#addRegion()
     if mode() != 'v'
@@ -39,7 +25,7 @@ func! multiedit#addRegion()
 
     if has_key(b:regions, line)
         " Check if this overlaps with any other region
-        let overlapid = s:hasOverlap(sel)
+        let overlapid = multiedit#hasOverlap(sel)
         if overlapid == -1
             let b:regions[line] = b:regions[line] + [sel]
         else
@@ -53,9 +39,9 @@ func! multiedit#addRegion()
 
     " Highlight the region
     if exists("new_first")
-        call s:rehighlight()
+        call multiedit#rehighlight()
     else
-        call s:highlight(line, startcol, endcol)
+        call multiedit#highlight(line, startcol, endcol)
     endif
 
     " Exit visual mode
@@ -97,7 +83,7 @@ func! multiedit#addMark(mode)
             endif
         endfor
 
-        call s:rehighlight()
+        call multiedit#rehighlight()
     endif
 
     " ...then make it a region
@@ -140,7 +126,7 @@ func! multiedit#start(bang, ...)
 
     " Set up some 'abort' mappings, because they can't be accounted for. They
     " will unmap themselves once they're pressed.
-    call s:maps(0)
+    call multiedit#maps(0)
 
     " Start insert mode. Since there's no way to mimic 'a' with :normal, we
     " have to do it manually:
@@ -157,7 +143,7 @@ func! multiedit#start(bang, ...)
         au CursorMovedI * call multiedit#update(0)
 
         " Once you leave INSERT, apply changes and delete this augroup
-        au InsertLeave * call multiedit#update(1) | call s:maps(0) | multiedit#triggerEndEvents() | au! multiedit
+        au InsertLeave * call multiedit#update(1) | call multiedit#maps(0) | call multiedit#triggerEndEvents() | au! multiedit
 
         if g:multiedit_auto_reset == 1
             " Clear all regions once you exit insert mode
@@ -186,7 +172,7 @@ func! multiedit#reset(...)
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
 
-    call s:maps(1)
+    call multiedit#maps(1)
     silent! au! multiedit
 endfunc
 " }}
@@ -212,7 +198,7 @@ func! multiedit#clear(...)
     let i = 0
     for region in b:regions[sel.line]
         " Does this cursor overlap with this region? If so, delete it.
-        if s:isOverlapping(sel, region)
+        if multiedit#isOverlapping(sel, region)
 
             " If you're deleting a main region, we need to pass on the role to
             " another region first!
@@ -232,7 +218,25 @@ func! multiedit#clear(...)
     endfor
 
     " The regions have changed. Update the highlights.
-    call s:rehighlight()
+    call multiedit#rehighlight()
+endfunc
+" }}
+
+" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
+" triggerEndEvents() {{
+func! multiedit#triggerEndEvents()
+    if exists('*Multiple_cursors_after')
+        exe "call Multiple_cursors_after()"
+    endif
+endfunc
+"}}
+
+" If Multiple_cursors_after function has been defined in ~/.vimrc, call it
+" triggerStartEvents() {{
+func! multiedit#triggerStartEvents()
+    if exists('*Multiple_cursors_before')
+        exe "call Multiple_cursors_before()"
+    endif
 endfunc
 " }}
 
@@ -265,14 +269,14 @@ func! multiedit#update(change_mode)
     " sequence.
     for line in sort(keys(b:regions))
         let regions = copy(b:regions[line])
-        let regions = sort(regions, "s:entrySort")
-        let s:offset = 0
+        let regions = sort(regions, "multiedit#entrySort")
+        let multiedit#offset = 0
 
         " Iterate through each region on this line
         for region in regions
             if a:change_mode
 
-                let region.col += s:offset
+                let region.col += multiedit#offset
                 if region.line != b:first_region.line || region.col != b:first_region.col
                     " Get the old line
                     let oldline = getline(region.line)
@@ -289,7 +293,7 @@ func! multiedit#update(change_mode)
                 endif
 
                 if col >= b:first_region.col
-                    let s:offset = s:offset + len(newtext) - region.len
+                    let multiedit#offset = multiedit#offset + len(newtext) - region.len
                 endif
                 let region.len = len(newtext)
 
@@ -299,8 +303,8 @@ func! multiedit#update(change_mode)
 
                     " ...move the highlight offset of regions after it
                     if region.col >= b:first_region.col
-                        let region.col += s:offset
-                        let s:offset = s:offset + len(newtext) - b:first_region.len
+                        let region.col += multiedit#offset
+                        let multiedit#offset = multiedit#offset + len(newtext) - b:first_region.len
                     endif
 
                     " ...and update the length of the first_region.
@@ -324,7 +328,7 @@ func! multiedit#update(change_mode)
                 endif
 
                 " Rehighlight the lines
-                call s:highlight(region.line, region.col, region.col+region.len)
+                call multiedit#highlight(region.line, region.col, region.col+region.len)
 
             endif
         endfor
@@ -350,7 +354,7 @@ func! multiedit#again()
     let b:first_region = b:regions_last["first"]
     let b:regions = b:regions_last["regions"]
 
-    call s:rehighlight()
+    call multiedit#rehighlight()
     return 1
 endfunc
 " }}
@@ -386,7 +390,7 @@ func! multiedit#jump(n)
             continue
         endif
 
-        let regions = sort(copy(b:regions[l]), 's:entrySort')
+        let regions = sort(copy(b:regions[l]), 'multiedit#entrySort')
         if n < 0
             call reverse(regions)
         endif
@@ -417,7 +421,7 @@ endfunc
 """"""""""""""""""""""""""
 " isOverlapping(selA, selB) {{
 " Checks to see if selA overlaps with selB
-func! s:isOverlapping(selA, selB)
+func! multiedit#isOverlapping(selA, selB)
     " Check for invalid input
     if type(a:selA) != 4 || type(a:selB) != 4
         return
@@ -441,13 +445,13 @@ endfunc
 " hasOverlap(sel) {{
 " Checks to see if any other regions overlap with this one. Returns -1 if not,
 " and the id of it otherwise (e.g. b:regions[line][id])
-func! s:hasOverlap(sel)
+func! multiedit#hasOverlap(sel)
     if type(a:sel) != 4 || !has_key(b:regions, a:sel.line)
         return -1
     endif
 
     for i in range(len(b:regions[a:sel.line]))
-        if s:isOverlapping(a:sel, b:regions[a:sel.line][i])
+        if multiedit#isOverlapping(a:sel, b:regions[a:sel.line][i])
             return i
         endif
     endfor
@@ -456,7 +460,7 @@ endfunc
 " }}
 
 " highlight(line, start, end) {{
-func! s:highlight(line, start, end)
+func! multiedit#highlight(line, start, end)
     if a:start > a:end || a:end < a:start
         return
     endif
@@ -470,35 +474,35 @@ endfunc
 " }}
 
 " rehighlight() {{
-func! s:rehighlight()
+func! multiedit#rehighlight()
     syn clear MultieditRegions
     syn clear MultieditFirstRegion
 
     " Go through regions and rehighlight them
     for line in keys(b:regions)
         for sel in b:regions[line]
-            call s:highlight(line, sel.col, sel.col + sel.len)
+            call multiedit#highlight(line, sel.col, sel.col + sel.len)
         endfor
     endfor
 endfunc
 " }}
 
 " map() {{
-func! s:maps(unmap)
+func! multiedit#maps(unmap)
     if a:unmap
         silent! iunmap <buffer><silent> <CR>
         silent! iunmap <buffer><silent> <Up>
         silent! iunmap <buffer><silent> <Down>
     else
-        inoremap <buffer><silent> <CR> <Esc><CR>:call s:maps(1)<CR>
-        inoremap <buffer><silent> <Up> <Esc><Up>:call s:maps(1)<CR>
-        inoremap <buffer><silent> <Down> <Esc><Down>:call s:maps(1)<CR>
+        inoremap <buffer><silent> <CR> <Esc><CR>:call multiedit#maps(1)<CR>
+        inoremap <buffer><silent> <Up> <Esc><Up>:call multiedit#maps(1)<CR>
+        inoremap <buffer><silent> <Down> <Esc><Down>:call multiedit#maps(1)<CR>
     endif
 endfunc
 " }}
 
 " entrySort() {{
-func! s:entrySort(a, b)
+func! multiedit#entrySort(a, b)
     return a:a.col == a:b.col ? 0 : a:a.col > a:b.col ? 1 : -1
 endfunc
 " }}
